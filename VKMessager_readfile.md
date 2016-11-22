@@ -1,1 +1,1 @@
-Just vk messager application :D
+Just vk messager application :DD
