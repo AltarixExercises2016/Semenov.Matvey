@@ -1,4 +1,4 @@
-+# Just vk messager application :DD
+-# Just vk messager application
 +
 + Семенов Матвей
 +
@@ -7,3 +7,5 @@
 +
 +
 +## Цель
++
++ Создать простой месенджер для VK.com
