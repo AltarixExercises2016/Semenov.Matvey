@@ -23,21 +23,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        final SharedPreferences setting = getSharedPreferences("mysettings", Context.MODE_PRIVATE);
-        boolean checkColor = setting.getBoolean("colorOn", false);
-        boolean checkPicture = setting.getBoolean("pictureOn", false);
-        if (checkColor) {
-            toolbar.setBackgroundColor(Color.GREEN);
-        }else {
-            toolbar.setBackgroundColor(Color.BLUE);
-        }
-        LinearLayout container = (LinearLayout) findViewById(R.id.container);
-
-        if (checkPicture) {
-            ImageView imageView = new ImageView(this);
-            imageView.setImageResource(R.drawable.yoda);
-            container.addView(imageView);
-        }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,13 +45,18 @@ public class MainActivity extends AppCompatActivity {
         }else {
             toolbar.setBackgroundColor(Color.BLUE);
         }
-
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
 
         if (checkPicture) {
-            ImageView imageView = new ImageView(this);
-            imageView.setImageResource(R.drawable.yoda);
-            container.addView(imageView);
+            if (container.getChildCount()==0) {
+                ImageView imageView = new ImageView(this);
+                imageView.setImageResource(R.drawable.yoda);
+                container.addView(imageView);
+            }
+        }else{
+            if (container.getChildCount()==1){
+                container.removeViewAt(0);
+            }
         }
     }
 
