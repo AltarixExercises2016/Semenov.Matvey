@@ -17,6 +17,7 @@ import com.example.vk_mess_demo_00001.Activitys.DialogsActivity;
 import com.example.vk_mess_demo_00001.Activitys.FriendsActivity;
 import com.example.vk_mess_demo_00001.Activitys.UserActivity;
 import com.example.vk_mess_demo_00001.R;
+import com.example.vk_mess_demo_00001.Transformation.CircularTransformation;
 import com.example.vk_mess_demo_00001.VKObjects.User;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -122,17 +123,19 @@ public class FriendListFragment extends Fragment {
             if (user.getPhoto_200().equals("")) {
                 Picasso.with(getContext())
                         .load("https://vk.com/images/soviet_200.png")
+                        .transform(new CircularTransformation())
                         .into(holder.photo);
             } else {
                 Log.i("photo",user.getPhoto_200());
                 Picasso.with(getContext())
                         .load(user.getPhoto_200())
+                        .transform(new CircularTransformation())
                         .into(holder.photo);
             }
             if (user.getOnline() == 1) {
-                Picasso.with(getContext())
-                        .load(R.drawable.tochka)
-                        .into(holder.online);
+                holder.online.setVisibility(View.VISIBLE);
+            }else {
+                holder.online.setVisibility(View.INVISIBLE);
             }
         }
 
