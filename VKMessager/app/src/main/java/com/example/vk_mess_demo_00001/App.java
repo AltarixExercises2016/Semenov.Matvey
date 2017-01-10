@@ -2,8 +2,9 @@ package com.example.vk_mess_demo_00001;
 
 import android.app.Application;
 
-import com.example.vk_mess_demo_00001.SQLite.DBHelper;
-import com.example.vk_mess_demo_00001.Utils.VKService;
+import com.example.vk_mess_demo_00001.sqlite.DBHelper;
+import com.example.vk_mess_demo_00001.managers.PreferencesManager;
+import com.example.vk_mess_demo_00001.utils.VKService;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 import retrofit2.Retrofit;
@@ -24,5 +25,6 @@ public class App extends Application {
         super.onCreate();
         Fresco.initialize(getApplicationContext());
         DBHelper.init(getApplicationContext());
+        PreferencesManager.init(getApplicationContext());
     }
 }

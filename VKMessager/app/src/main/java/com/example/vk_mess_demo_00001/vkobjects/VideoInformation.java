@@ -1,10 +1,10 @@
-package com.example.vk_mess_demo_00001.VKObjects;
+package com.example.vk_mess_demo_00001.vkobjects;
 
 /**
  * Created by Каракатица on 29.10.2016.
  */
 
-public class video_iformation {
+public class VideoInformation {
     private String player;
 
     public String getPlayer() {

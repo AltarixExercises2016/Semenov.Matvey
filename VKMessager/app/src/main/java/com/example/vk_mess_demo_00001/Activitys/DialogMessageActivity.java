@@ -1,4 +1,4 @@
-package com.example.vk_mess_demo_00001.Activitys;
+package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,26 +18,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vk_mess_demo_00001.Transformation.CircularTransformation;
-import com.example.vk_mess_demo_00001.VKObjects.Attachment;
-import com.example.vk_mess_demo_00001.VKObjects.Dialogs;
-import com.example.vk_mess_demo_00001.VKObjects.ItemMess;
+import com.example.vk_mess_demo_00001.managers.IntentManager;
+import com.example.vk_mess_demo_00001.managers.PreferencesManager;
+import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
+import com.example.vk_mess_demo_00001.vkobjects.Attachment;
+import com.example.vk_mess_demo_00001.vkobjects.Dialogs;
+import com.example.vk_mess_demo_00001.vkobjects.ItemMess;
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.VKObjects.ServerResponse;
-import com.example.vk_mess_demo_00001.VKObjects.User;
-import com.example.vk_mess_demo_00001.Utils.Util;
-import com.example.vk_mess_demo_00001.Utils.VKService;
-import com.example.vk_mess_demo_00001.VKObjects.video_iformation;
+import com.example.vk_mess_demo_00001.vkobjects.ServerResponse;
+import com.example.vk_mess_demo_00001.vkobjects.User;
+import com.example.vk_mess_demo_00001.utils.Util;
+import com.example.vk_mess_demo_00001.vkobjects.VideoInformation;
 import com.google.gson.Gson;
 import com.luseen.autolinklibrary.AutoLinkMode;
 import com.luseen.autolinklibrary.AutoLinkOnClickListener;
@@ -55,8 +54,6 @@ import java.util.TimeZone;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.vk_mess_demo_00001.App.service;
 
@@ -73,6 +70,7 @@ public class DialogMessageActivity extends AppCompatActivity {
     int off;
     ArrayList<Dialogs> items;
     ArrayList<User> names;
+    PreferencesManager preferencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +79,17 @@ public class DialogMessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dialog_message);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         frwd=false;
+        preferencesManager = PreferencesManager.getInstance();
         user_id = getIntent().getIntExtra("userID", 0);
         chat_id = getIntent().getIntExtra("ChatID", 0);
+        items = new ArrayList<>();
+        names = new ArrayList<>();
+        adapter = new Adapter();
+        recyclerView = (RecyclerView) findViewById(R.id.list);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        refreshLayout = (SwipyRefreshLayout) findViewById(R.id.refresh);
+        qwe = (Button) findViewById(R.id.button);
+
         if (chat_id != 0) {
             user_id = 2000000000 + chat_id;
             title = getIntent().getStringExtra("Title");
@@ -95,20 +102,13 @@ public class DialogMessageActivity extends AppCompatActivity {
         }
 
 
-        items = new ArrayList<>();
-        names = new ArrayList<>();
-
-        adapter = new Adapter();
-        recyclerView = (RecyclerView) findViewById(R.id.list);
-
-        LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         llm.setStackFromEnd(true);
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(adapter);
 
         setTitle(title);
-        refreshLayout = (SwipyRefreshLayout) findViewById(R.id.refresh);
+
         refreshLayout.setColorSchemeResources(R.color.accent);
         off = 0;
         refresh(off);
@@ -126,7 +126,6 @@ public class DialogMessageActivity extends AppCompatActivity {
                 }
             }
         });
-        qwe = (Button) findViewById(R.id.button);
         qwe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,8 +139,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                         if (chat_id != 0) {
                             kek = 0;
                         }
-                        final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-                        String TOKEN = Token.getString("token_string", "");
+                        String TOKEN = preferencesManager.getToken();
                         Call<ServerResponse> call = service.sendMessage(TOKEN, kek, message, chat_id, 2000000000 + chat_id);
 
                         call.enqueue(new Callback<ServerResponse>() {
@@ -150,7 +148,6 @@ public class DialogMessageActivity extends AppCompatActivity {
                                 Log.wtf("motya", response.raw().toString());
                                 off = 0;
                                 refresh(off);
-//                            listView.setSelection(listView.getCount() - 1);
                             }
 
                             @Override
@@ -170,7 +167,6 @@ public class DialogMessageActivity extends AppCompatActivity {
                         refreshLayout.setRefreshing(false);
                         Toast toast = Toast.makeText(getApplicationContext(),
                                 "Void message", Toast.LENGTH_SHORT);
-                        //toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                     }
                 }else {
@@ -182,14 +178,12 @@ public class DialogMessageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        Log.wtf("back","adapter.fwd_mess.size()= "+adapter.fwd_mess.size());
         if (adapter.fwd_mess.size() > 1) {
             adapter.fwd_mess.remove(adapter.fwd_mess.size() - 1);
             items = adapter.fwd_mess.get(adapter.fwd_mess.size() - 1);
             adapter.notifyDataSetChanged();
             recyclerView.scrollToPosition(adapter.pos.get(adapter.pos.size() - 1));
             adapter.pos.remove(adapter.pos.size() - 1);
-//            listView.setSelection(listView.getCount() - 1);
         } else {
             if (adapter.fwd_mess.size() == 1) {
                 items.clear();
@@ -206,24 +200,21 @@ public class DialogMessageActivity extends AppCompatActivity {
     }
 
 
-    public String name_rec(Dialogs contain_mess) {
+    public String nameRec(Dialogs contain_mess) {
         String str = "";
         str = "," + contain_mess.getUser_id();
         for (int i = 0; i < contain_mess.getFwd_messages().size(); i++) {
-            str += name_rec(contain_mess.getFwd_messages().get(i));
+            str += nameRec(contain_mess.getFwd_messages().get(i));
         }
         return str;
     }
 
     public void refresh(final int offset) {
-        //if (offset==0) {frwd=false;}
         if (!frwd) {
             refreshLayout.setRefreshing(true);
-//        adapter = new Adapter(this);
             names = new ArrayList<User>();
 
-            final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-            String TOKEN = Token.getString("token_string", "");
+            String TOKEN = preferencesManager.getToken();
             Call<ServerResponse<ItemMess<ArrayList<Dialogs>>>> call = service.getHistory(TOKEN, 100, offset, user_id);
 
             call.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<Dialogs>>>>() {
@@ -234,36 +225,20 @@ public class DialogMessageActivity extends AppCompatActivity {
                     String people_id = "" + l.get(0).getUser_id();
                     if (offset == 0) {
                         items.clear();
-                        for (int i = l.size() - 1; i >= 0; i--) {
-                            people_id += name_rec(l.get(i));
-                            items.add(l.get(i));
+                        for (int i = 0; i<l.size();i++){
+                            people_id += nameRec(l.get(i));
+                            items.add(0,l.get(i));
                         }
                     } else {
-                        ArrayList<Dialogs> trash = new ArrayList<Dialogs>();
-                        trash.clear();
-                        trash.addAll(items);
-                        items.clear();
-                        for (int i = l.size() - 1; i >= 0; i--) {
-                            people_id += name_rec(l.get(i));
-                            items.add(l.get(i));
+                        for (int i = 0; i<l.size();i++){
+                            people_id += nameRec(l.get(i));
+                            items.add(0,l.get(i));
                         }
-                        items.addAll(trash);
-
-                        //recyclerView.scrollToPosition(items.size()-trash.size()-1);
                     }
-                    final SharedPreferences Uid = getSharedPreferences("uid", Context.MODE_PRIVATE);
-                    people_id += ", " + Uid.getInt("uid_int", 0);
-//                adapter.fwd_mess.add(adapter.items);
-                    Log.wtf("names", people_id);
-//                listView = (ListView) findViewById(R.id.listView);
-//                listView.setAdapter(adapter);
-//                if (chat_id == 0) {
-//                    adapter.notifyDataSetChanged();
-//                }
+                    people_id += ", " + preferencesManager.getUserID();
                     refreshLayout.setRefreshing(false);
 
-                    final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-                    String TOKEN = Token.getString("token_string", "");
+                    String TOKEN = preferencesManager.getToken();
                     Call<ServerResponse<ArrayList<User>>> call1 = service.getUser(TOKEN, people_id, "photo_100,photo_400_orig,photo_max_orig, online,city,country,education, universities, schools,bdate,contacts");
 
                     call1.enqueue(new Callback<ServerResponse<ArrayList<User>>>() {
@@ -278,7 +253,6 @@ public class DialogMessageActivity extends AppCompatActivity {
                                 names.add(l.get(i));
                             }
                             refreshLayout.setRefreshing(false);
-
                             recyclerView.scrollToPosition(items.size() - offset);
                             adapter.fwd_mess.clear();
                             adapter.reserv.clear();
@@ -443,10 +417,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (dialog.getChat_id() == 0) {
-                        Intent intent = new Intent(DialogMessageActivity.this, UserActivity.class);
-                        intent.putExtra("userID", dialog.getUser_id());
-                        intent.putExtra("userJson", new Gson().toJson(userFinal));
-                        startActivity(intent);
+                        startActivity(IntentManager.getUserIntent(DialogMessageActivity.this,dialog.getUser_id(),new Gson().toJson(userFinal)));
                     }
                 }
             });
@@ -536,7 +507,7 @@ public class DialogMessageActivity extends AppCompatActivity {
             for (int i=0;i<dialog.getAttachments().size();i++){
                 switch (dialog.getAttachments().get(i).getType()){
                     case "photo":{
-                        if (setting.getBoolean("photochatOn", true)) {
+                        if (preferencesManager.getSettingPhotoChatOn()) {
                             String photo = "";
                             String photomess = "";
                             if (dialog.getAttachments().get(i).getPhoto().getPhoto_1280() != null) {
@@ -598,7 +569,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                         holder.line.addView(cont);
                         break;
                     }
-                    case "link":{
+                    case "Link":{
                         bodyContainer +="\n" + dialog.getAttachments().get(i).getLink().getUrl();
                         break;
                     }
@@ -625,11 +596,11 @@ public class DialogMessageActivity extends AppCompatActivity {
                                 toast.show();
                                 final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
                                 String TOKEN = Token.getString("token_string", "");
-                                Call<ServerResponse<ItemMess<ArrayList<video_iformation>>>> call = service.getVideos(TOKEN, video);
+                                Call<ServerResponse<ItemMess<ArrayList<VideoInformation>>>> call = service.getVideos(TOKEN, video);
 
-                                call.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<video_iformation>>>>() {
+                                call.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<VideoInformation>>>>() {
                                     @Override
-                                    public void onResponse(Call<ServerResponse<ItemMess<ArrayList<video_iformation>>>> call, Response<ServerResponse<ItemMess<ArrayList<video_iformation>>>> response) {
+                                    public void onResponse(Call<ServerResponse<ItemMess<ArrayList<VideoInformation>>>> call, Response<ServerResponse<ItemMess<ArrayList<VideoInformation>>>> response) {
                                         Log.wtf("motya", response.raw().toString());
                                         String res = response.body().getResponse().getitem().get(0).getPlayer();
                                         Uri address = Uri.parse(res);
@@ -638,7 +609,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                                     }
 
                                     @Override
-                                    public void onFailure(Call<ServerResponse<ItemMess<ArrayList<video_iformation>>>> call, Throwable t) {
+                                    public void onFailure(Call<ServerResponse<ItemMess<ArrayList<VideoInformation>>>> call, Throwable t) {
                                         Toast toast = Toast.makeText(getApplicationContext(),
                                                 "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                                         toast.setGravity(Gravity.CENTER, 0, 0);
@@ -696,7 +667,6 @@ public class DialogMessageActivity extends AppCompatActivity {
                         Button button3 = (Button) cont.findViewById(R.id.button3);
                         Button button4 = (Button) cont.findViewById(R.id.button4);
                         holder.line.addView(cont);
-                        Log.wtf("audio", dialog.getAttachments().get(i).getAudio().getUrl());
                         final String url = dialog.getAttachments().get(i).getAudio().getUrl();
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -710,14 +680,12 @@ public class DialogMessageActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 if (DialogsActivity.mediaPlayer != null) {
-                                    Log.wtf("audio", "stop seek= " + DialogsActivity.mediaPlayer.getCurrentPosition());
                                     if (DialogsActivity.mediaPlayer.getCurrentPosition() == 0) {
                                         try {
                                             DialogsActivity.mediaPlayer.release();
                                             DialogsActivity.mediaPlayer = null;
                                             DialogsActivity.mediaPlayer = new MediaPlayer();
                                             DialogsActivity.mediaPlayer.setDataSource(url);
-                                            Log.wtf("audio", "url start= " + url);
                                             DialogsActivity.mediaPlayer.prepare();
                                             DialogsActivity.mediaPlayer.start();
                                         } catch (Exception e) {
@@ -730,7 +698,6 @@ public class DialogMessageActivity extends AppCompatActivity {
                                     try {
                                         DialogsActivity.mediaPlayer = new MediaPlayer();
                                         DialogsActivity.mediaPlayer.setDataSource(url);
-                                        Log.wtf("audio", "url start= " + url);
                                         DialogsActivity.mediaPlayer.prepare();
                                         DialogsActivity.mediaPlayer.start();
                                     } catch (Exception e) {
@@ -762,7 +729,6 @@ public class DialogMessageActivity extends AppCompatActivity {
                                 if (DialogsActivity.mediaPlayer != null) {
                                     DialogsActivity.mediaPlayer.pause();
                                     DialogsActivity.mediaPlayer.seekTo(0);
-                                    Log.wtf("audio", "stop seek= " + DialogsActivity.mediaPlayer.getCurrentPosition());
                                 }
                             }
                         });

@@ -1,8 +1,6 @@
-package com.example.vk_mess_demo_00001.Activitys;
+package com.example.vk_mess_demo_00001.activitys;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -12,6 +10,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.example.vk_mess_demo_00001.R;
+import com.example.vk_mess_demo_00001.managers.IntentManager;
+import com.example.vk_mess_demo_00001.managers.PreferencesManager;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+        //8388607
         String url = "https://oauth.vk.com/authorize?" +
                 "client_id=" + 5658788 + "&" +
                 "scope=" + 8388607 + "&" +
@@ -62,15 +63,17 @@ public class LoginActivity extends AppCompatActivity {
     public void doneWithThis(String url) {
         String token = extract(url, "access_token=(.*?)&");
         int uid = Integer.parseInt(extract(url, "user_id=(\\d*)"));
-        final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-        final SharedPreferences Uid = getSharedPreferences("uid", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = Token.edit();
-        editor.putString("token_string",token);
-        editor.apply();
-
-        editor = Uid.edit();
-        editor.putInt("uid_int",uid);
-        editor.apply();
+//        final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
+//        final SharedPreferences Uid = getSharedPreferences("uid", Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = Token.edit();
+//        editor.putString("token_string",token);
+//        editor.apply();
+//
+//        editor = Uid.edit();
+//        editor.putInt("uid_int",uid);
+//        editor.apply();
+        PreferencesManager.getInstance().setToken(token);
+        PreferencesManager.getInstance().setUserID(uid);
 
         goNext();
     }
@@ -84,9 +87,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void goNext() {
-        Intent intent = new Intent();
-        intent.setClass(getApplicationContext(), DialogsActivity.class);
+//        Intent intent = new Intent();
+//        intent.setClass(getApplicationContext(), DialogsActivity.class);
         LoginActivity.this.finish();
-        startActivity(intent);
+        startActivity(IntentManager.getDialogsIntent(getApplicationContext()));
     }
 }

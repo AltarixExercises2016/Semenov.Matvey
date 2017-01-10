@@ -1,10 +1,10 @@
-package com.example.vk_mess_demo_00001.VKObjects.AttachmentType;
+package com.example.vk_mess_demo_00001.vkobjects.attachmenttype;
 
 /**
  * Created by Каракатица on 30.10.2016.
  */
 
-public class doc_mess {
+public class DocMess {
     private String title;
     private String url;
     private String access_key;

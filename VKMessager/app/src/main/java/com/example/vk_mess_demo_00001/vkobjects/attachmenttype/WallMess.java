@@ -1,6 +1,6 @@
-package com.example.vk_mess_demo_00001.VKObjects.AttachmentType;
+package com.example.vk_mess_demo_00001.vkobjects.attachmenttype;
 
-import com.example.vk_mess_demo_00001.VKObjects.Attachment;
+import com.example.vk_mess_demo_00001.vkobjects.Attachment;
 
 import java.util.ArrayList;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Created by matek on 13.11.2016.
  */
 
-public class wall_mess {
+public class WallMess {
     private int id;
     private int from_id;
     private long date;
@@ -19,7 +19,7 @@ public class wall_mess {
     private comments comments;
     private likes likes;
     private reposts reposts;
-    private ArrayList<wall_mess> copy_history;
+    private ArrayList<WallMess> copy_history;
     public int getId() {
         return id;
     }
@@ -44,23 +44,23 @@ public class wall_mess {
         return attachments;
     }
 
-    public wall_mess.post_source getPost_source() {
+    public WallMess.post_source getPost_source() {
         return post_source;
     }
 
-    public wall_mess.comments getComments() {
+    public WallMess.comments getComments() {
         return comments;
     }
 
-    public wall_mess.likes getLikes() {
+    public WallMess.likes getLikes() {
         return likes;
     }
 
-    public wall_mess.reposts getReposts() {
+    public WallMess.reposts getReposts() {
         return reposts;
     }
 
-    public ArrayList<wall_mess> getCopy_history() {
+    public ArrayList<WallMess> getCopy_history() {
         return copy_history;
     }
 

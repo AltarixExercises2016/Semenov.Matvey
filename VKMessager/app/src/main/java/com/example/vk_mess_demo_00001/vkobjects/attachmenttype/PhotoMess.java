@@ -1,10 +1,10 @@
-package com.example.vk_mess_demo_00001.VKObjects.AttachmentType;
+package com.example.vk_mess_demo_00001.vkobjects.attachmenttype;
 
 /**
  * Created by Каракатица on 16.10.2016.
  */
 
-public class photo_mess {
+public class PhotoMess {
     private int id;
     private int owner_id;
     private String photo_75;

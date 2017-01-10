@@ -1,4 +1,4 @@
-package com.example.vk_mess_demo_00001.Activitys;
+package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +12,11 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.example.vk_mess_demo_00001.R;
+import com.example.vk_mess_demo_00001.managers.IntentManager;
+import com.example.vk_mess_demo_00001.managers.PreferencesManager;
 
 public class SettingActivity extends AppCompatActivity {
-
+    PreferencesManager preferencesManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,63 +26,39 @@ public class SettingActivity extends AppCompatActivity {
         Switch photouser = (Switch) findViewById(R.id.switch1);
         Switch photochat = (Switch) findViewById(R.id.switch3);
         Switch online = (Switch) findViewById(R.id.switch2);
-        final SharedPreferences setting = getSharedPreferences("mysettings", Context.MODE_PRIVATE);
-        photouser.setChecked(setting.getBoolean("photouserOn",true));
-        photochat.setChecked(setting.getBoolean("photochatOn",true));
-        online.setChecked(setting.getBoolean("onlineOn",true));
+        Button button = (Button) findViewById(R.id.button);
+        preferencesManager = PreferencesManager.getInstance();
+
+
+        photouser.setChecked(preferencesManager.getSettingPhotoUserOn());
+        photochat.setChecked(preferencesManager.getSettingPhotoChatOn());
+        online.setChecked(preferencesManager.getSettingOnline());
+
+
         photouser.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    SharedPreferences.Editor editor = setting.edit();
-                    editor.putBoolean("photouserOn",isChecked);
-                    editor.apply();
-                }else{
-                    SharedPreferences.Editor editor = setting.edit();
-                    editor.putBoolean("photouserOn",isChecked);
-                    editor.apply();
-                }
+                preferencesManager.setSettingPhotoUserOn(isChecked);
             }
         });
         photochat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    SharedPreferences.Editor editor = setting.edit();
-                    editor.putBoolean("photochatOn",isChecked);
-                    editor.apply();
-                }else{
-                    SharedPreferences.Editor editor = setting.edit();
-                    editor.putBoolean("photochatOn",isChecked);
-                    editor.apply();
-                }
+                preferencesManager.setSettingPhotoChatOn(isChecked);
             }
         });
         online.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    SharedPreferences.Editor editor = setting.edit();
-                    editor.putBoolean("onlineOn",isChecked);
-                    editor.apply();
-                }else {
-                    SharedPreferences.Editor editor = setting.edit();
-                    editor.putBoolean("onlineOn",isChecked);
-                    editor.apply();
-                }
+                preferencesManager.setSettingOnline(isChecked);
             }
         });
-        Button button = (Button) findViewById(R.id.button);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = Token.edit();
-                editor.putString("token_string","");
-                editor.apply();
-                Intent intent = new Intent(SettingActivity.this,StartActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                preferencesManager.setToken("");
+                startActivity(IntentManager.getStartIntent(SettingActivity.this,true));
                 SettingActivity.this.finish();
             }
         });

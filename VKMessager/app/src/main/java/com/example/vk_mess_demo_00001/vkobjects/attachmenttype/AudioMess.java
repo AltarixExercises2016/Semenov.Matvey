@@ -1,5 +1,5 @@
-package com.example.vk_mess_demo_00001.VKObjects.AttachmentType;
-public class audio_mess {
+package com.example.vk_mess_demo_00001.vkobjects.attachmenttype;
+public class AudioMess {
     private int id;
     private int owner_id;
     private int duration;

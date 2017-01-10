@@ -1,4 +1,4 @@
-package com.example.vk_mess_demo_00001.Activitys;
+package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,11 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.VKObjects.AttachmentType.photo_mess;
-import com.example.vk_mess_demo_00001.VKObjects.ItemMess;
-import com.example.vk_mess_demo_00001.VKObjects.ServerResponse;
-import com.example.vk_mess_demo_00001.VKObjects.User;
-import com.example.vk_mess_demo_00001.Utils.VKService;
+import com.example.vk_mess_demo_00001.managers.IntentManager;
+import com.example.vk_mess_demo_00001.managers.PreferencesManager;
+import com.example.vk_mess_demo_00001.vkobjects.attachmenttype.PhotoMess;
+import com.example.vk_mess_demo_00001.vkobjects.ItemMess;
+import com.example.vk_mess_demo_00001.vkobjects.ServerResponse;
+import com.example.vk_mess_demo_00001.vkobjects.User;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.stfalcon.frescoimageviewer.ImageViewer;
@@ -30,8 +31,6 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.vk_mess_demo_00001.App.service;
 
@@ -42,16 +41,16 @@ public class UserActivity extends AppCompatActivity {
 //            .build();
 //
 //    final public static VKService service = retrofit.create(VKService.class);
-
+    PreferencesManager preferencesManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        preferencesManager = PreferencesManager.getInstance();
         final int user_id = getIntent().getIntExtra("userID", 0);
         final User user = new Gson().fromJson(getIntent().getStringExtra("userJson"), User.class);
         setTitle(user.getFirst_name() + " " + user.getLast_name());
-        final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
         final LinearLayout lineBottom = (LinearLayout) findViewById(R.id.lineBottom);
         final TextView tv = new TextView(UserActivity.this);
         final TextView tv1 = new TextView(UserActivity.this);
@@ -132,12 +131,12 @@ public class UserActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String TOKEN = Token.getString("token_string", "");
-                Call<ServerResponse<ItemMess<ArrayList<photo_mess>>>> call1 = service.getPhotos(TOKEN, user_id);
-                call1.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<photo_mess>>>>() {
+                String TOKEN = preferencesManager.getToken();
+                Call<ServerResponse<ItemMess<ArrayList<PhotoMess>>>> call1 = service.getPhotos(TOKEN, user_id);
+                call1.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<PhotoMess>>>>() {
                     @Override
-                    public void onResponse(Call<ServerResponse<ItemMess<ArrayList<photo_mess>>>> call1, Response<ServerResponse<ItemMess<ArrayList<photo_mess>>>> response) {
-                        ArrayList<photo_mess> l1 = response.body().getResponse().getitem();
+                    public void onResponse(Call<ServerResponse<ItemMess<ArrayList<PhotoMess>>>> call1, Response<ServerResponse<ItemMess<ArrayList<PhotoMess>>>> response) {
+                        ArrayList<PhotoMess> l1 = response.body().getResponse().getitem();
                         final ArrayList<String> photo = new ArrayList<>();
                         for (int i = 0; i < l1.size(); i++) {
                             if (l1.get(i).getPhoto_1280() != null) {
@@ -165,7 +164,7 @@ public class UserActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<ServerResponse<ItemMess<ArrayList<photo_mess>>>> call1, Throwable t) {
+                    public void onFailure(Call<ServerResponse<ItemMess<ArrayList<PhotoMess>>>> call1, Throwable t) {
                         Log.wtf("motya", t.getMessage());
                         Toast toast = Toast.makeText(getApplicationContext(),
                                 "              Internet connection is lost              ", Toast.LENGTH_SHORT);
@@ -184,18 +183,18 @@ public class UserActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(UserActivity.this, DialogMessageActivity.class);
-                intent.putExtra("userID", user_id);
-                intent.putExtra("userName", user.getFirst_name() + " " + user.getLast_name());
-                startActivity(intent);
+//                Intent intent = new Intent(UserActivity.this, DialogMessageActivity.class);
+//                intent.putExtra("userID", user_id);
+//                intent.putExtra("userName", user.getFirst_name() + " " + user.getLast_name());
+                startActivity(IntentManager.getDialogMessageIntent(UserActivity.this,user_id,0,"",user.getFirst_name() + " " + user.getLast_name()));
             }
         });
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(UserActivity.this, FriendsActivity.class);
-                intent.putExtra("userID", user_id);
-                startActivity(intent);
+//                Intent intent = new Intent(UserActivity.this, FriendsActivity.class);
+//                intent.putExtra("userID", user_id);
+                startActivity(IntentManager.getFriendIntent(UserActivity.this));
             }
         });
     }

@@ -1,6 +1,5 @@
-package com.example.vk_mess_demo_00001.Activitys;
+package com.example.vk_mess_demo_00001.activitys;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -8,12 +7,7 @@ import android.widget.ImageView;
 import com.example.vk_mess_demo_00001.R;
 import com.squareup.picasso.Picasso;
 
-import pl.droidsonroids.gif.GifDrawable;
-import pl.droidsonroids.gif.GifImageButton;
-import pl.droidsonroids.gif.GifImageView;
 import uk.co.senab.photoview.PhotoViewAttacher;
-
-import static com.example.vk_mess_demo_00001.R.id.imageView;
 
 public class PhotoActivity extends AppCompatActivity {
 

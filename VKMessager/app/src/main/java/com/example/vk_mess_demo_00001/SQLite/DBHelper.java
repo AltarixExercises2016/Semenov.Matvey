@@ -1,4 +1,4 @@
-package com.example.vk_mess_demo_00001.SQLite;
+package com.example.vk_mess_demo_00001.sqlite;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

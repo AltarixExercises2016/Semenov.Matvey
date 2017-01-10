@@ -1,15 +1,11 @@
-package com.example.vk_mess_demo_00001.Activitys;
+package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -31,15 +27,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vk_mess_demo_00001.Fragments.FriendListFragment;
+import com.example.vk_mess_demo_00001.fragments.FriendListFragment;
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.SQLite.DBHelper;
-import com.example.vk_mess_demo_00001.Transformation.CircularTransformation;
-import com.example.vk_mess_demo_00001.Utils.VKService;
-import com.example.vk_mess_demo_00001.VKObjects.ItemMess;
-import com.example.vk_mess_demo_00001.VKObjects.ServerResponse;
-import com.example.vk_mess_demo_00001.VKObjects.User;
-import com.example.vk_mess_demo_00001.VKObjects.item;
+import com.example.vk_mess_demo_00001.managers.IntentManager;
+import com.example.vk_mess_demo_00001.sqlite.DBHelper;
+import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
+import com.example.vk_mess_demo_00001.managers.PreferencesManager;
+import com.example.vk_mess_demo_00001.vkobjects.ItemMess;
+import com.example.vk_mess_demo_00001.vkobjects.ServerResponse;
+import com.example.vk_mess_demo_00001.vkobjects.User;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -48,8 +44,6 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.vk_mess_demo_00001.App.service;
 
@@ -65,6 +59,7 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
     public static String ALL_FRIENDS = "All friends";
     public static String ONLINE_FRIENDS = "Online";
     SQLiteDatabase dataBase;
+    PreferencesManager preferencesManager;
     int user_id;
 
     @Override
@@ -74,19 +69,23 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
         setTitle("Friends");
-
+        preferencesManager = PreferencesManager.getInstance();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        pager = (ViewPager) findViewById(R.id.pager);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        setSupportActionBar(toolbar);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);
-        final SharedPreferences SPuser = getSharedPreferences("uidgson", Context.MODE_PRIVATE);
-        final String uidgson = SPuser.getString("uidgson_string", "");
+        final String uidgson = preferencesManager.getUserGson();
         if (uidgson!="") {
             final User iuser = new Gson().fromJson(uidgson, User.class);
             Picasso.with(FriendsActivity.this)
@@ -114,8 +113,7 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
                 ((TextView) navigationView.getHeaderView(0).findViewById(R.id.textView21)).setText("");
             }
         }
-        pager = (ViewPager) findViewById(R.id.pager);
-        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -171,8 +169,7 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
 
     private void refresh(int user_id) {
         refreshLayout.setRefreshing(true);
-        final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-        String TOKEN = Token.getString("token_string", "");
+        String TOKEN = preferencesManager.getToken();
         Call<ServerResponse<ItemMess<ArrayList<User>>>> call = service.getFriends(TOKEN, user_id, "online, photo_200, city");
 
         call.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<User>>>>() {
@@ -215,7 +212,6 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
 
         @Override
         public Fragment getItem(int position) {
-            //Log.i("motya", new Gson().toJson(info));
             return FriendListFragment.newInstance(position, new Gson().toJson(info));
         }
 
@@ -265,24 +261,18 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        // Handle navigation view Item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            Intent intent = new Intent();
-            intent.setClass(FriendsActivity.this, DialogsActivity.class);
-            startActivity(intent);
+            startActivity(IntentManager.getDialogsIntent(FriendsActivity.this));
             FriendsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
-            Intent intent = new Intent();
-            intent.setClass(FriendsActivity.this, FriendsActivity.class);
-            startActivity(intent);
+            startActivity(IntentManager.getFriendIntent(FriendsActivity.this));
             FriendsActivity.this.finish();
         } else if (id == R.id.nav_settings) {
-            Intent intent = new Intent();
-            intent.setClass(FriendsActivity.this, SettingActivity.class);
-            startActivity(intent);
+            startActivity(IntentManager.getSettingIntent(FriendsActivity.this));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

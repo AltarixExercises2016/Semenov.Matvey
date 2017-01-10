@@ -1,4 +1,4 @@
-package com.example.vk_mess_demo_00001.Fragments;
+package com.example.vk_mess_demo_00001.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +16,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.vk_mess_demo_00001.Activitys.FriendsActivity;
-import com.example.vk_mess_demo_00001.Activitys.UserActivity;
+import com.example.vk_mess_demo_00001.activitys.FriendsActivity;
+import com.example.vk_mess_demo_00001.activitys.UserActivity;
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.Transformation.CircularTransformation;
-import com.example.vk_mess_demo_00001.VKObjects.User;
+import com.example.vk_mess_demo_00001.managers.IntentManager;
+import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
+import com.example.vk_mess_demo_00001.vkobjects.User;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
@@ -159,10 +159,10 @@ public class FriendListFragment extends Fragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), UserActivity.class);
-                    intent.putExtra("userID", user.getId());
-                    intent.putExtra("userJson", new Gson().toJson(user));
-                    startActivity(intent);
+//                    Intent intent = new Intent(getContext(), UserActivity.class);
+//                    intent.putExtra("userID", user.getId());
+//                    intent.putExtra("userJson", new Gson().toJson(user));
+                    startActivity(IntentManager.getUserIntent(getContext(),user.getId(),new Gson().toJson(user)));
                 }
             });
 

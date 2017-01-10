@@ -1,9 +1,7 @@
-package com.example.vk_mess_demo_00001.Activitys;
+package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -35,13 +33,15 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.SQLite.DBHelper;
-import com.example.vk_mess_demo_00001.Transformation.CircularTransformation;
-import com.example.vk_mess_demo_00001.VKObjects.Dialogs;
-import com.example.vk_mess_demo_00001.VKObjects.ItemMess;
-import com.example.vk_mess_demo_00001.VKObjects.ServerResponse;
-import com.example.vk_mess_demo_00001.VKObjects.User;
-import com.example.vk_mess_demo_00001.VKObjects.item;
+import com.example.vk_mess_demo_00001.managers.IntentManager;
+import com.example.vk_mess_demo_00001.sqlite.DBHelper;
+import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
+import com.example.vk_mess_demo_00001.managers.PreferencesManager;
+import com.example.vk_mess_demo_00001.vkobjects.Dialogs;
+import com.example.vk_mess_demo_00001.vkobjects.Item;
+import com.example.vk_mess_demo_00001.vkobjects.ItemMess;
+import com.example.vk_mess_demo_00001.vkobjects.ServerResponse;
+import com.example.vk_mess_demo_00001.vkobjects.User;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -60,14 +60,16 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
     String stroka = "";
     int off = 0;
     ArrayList<User> names;
-    ArrayList<item> items;
+    ArrayList<Item> items;
     private RecyclerView recyclerView;
     SQLiteDatabase dataBase;
+    PreferencesManager preferencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         dataBase = DBHelper.getInstance().getWritableDatabase();
+        preferencesManager= PreferencesManager.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dialogs);
 
@@ -93,8 +95,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        final SharedPreferences SPuser = getSharedPreferences("uidgson", Context.MODE_PRIVATE);
-        final String uidgson = SPuser.getString("uidgson_string", "");
+        final String uidgson = preferencesManager.getUserGson();
         if (uidgson!="") {
             final User iuser = new Gson().fromJson(uidgson, User.class);
             Picasso.with(DialogsActivity.this)
@@ -124,13 +125,11 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         }
 
         setTitle(getString(R.string.dialogs));
-        final SharedPreferences setting = getSharedPreferences("mysettings", Context.MODE_PRIVATE);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (setting.getBoolean("onlineOn", true)) {
-                    final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-                    String TOKEN = Token.getString("token_string", "");
+                if (preferencesManager.getSettingOnline()) {
+                    String TOKEN = preferencesManager.getToken();
                     Call<ServerResponse> call = service.setOnline(TOKEN);
 
                     call.enqueue(new Callback<ServerResponse>() {
@@ -170,7 +169,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
             int dialog = cursor.getColumnIndex(DBHelper.KEY_OBJ);
             int name = cursor1.getColumnIndex(DBHelper.KEY_OBJ);
             for (int i = 0; i < cursor.getCount(); i++) {
-                items.add(gson.fromJson(cursor.getString(dialog), item.class));
+                items.add(gson.fromJson(cursor.getString(dialog), Item.class));
                 cursor.moveToNext();
             }
             for (int i = 0; i < cursor1.getCount(); i++) {
@@ -216,16 +215,15 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
     public void refresh(final int offset) {
         refreshLayout.setRefreshing(true);
         stroka = "";
-        final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-        String TOKEN = Token.getString("token_string", "");
-        Call<ServerResponse<ItemMess<ArrayList<item>>>> call = service.getDialogs(TOKEN, 20, offset);
+        String TOKEN = preferencesManager.getToken();
+        Call<ServerResponse<ItemMess<ArrayList<Item>>>> call = service.getDialogs(TOKEN, 20, offset);
 
-        call.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<item>>>>() {
+        call.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<Item>>>>() {
             @Override
-            public void onResponse(Call<ServerResponse<ItemMess<ArrayList<item>>>> call,
-                                   Response<ServerResponse<ItemMess<ArrayList<item>>>> response) {
+            public void onResponse(Call<ServerResponse<ItemMess<ArrayList<Item>>>> call,
+                                   Response<ServerResponse<ItemMess<ArrayList<Item>>>> response) {
                 Log.wtf("motya", response.raw().toString());
-                ArrayList<item> l = response.body().getResponse().getitem();
+                ArrayList<Item> l = response.body().getResponse().getitem();
                 if (l.size() != 0) stroka += "" + l.get(0).getMessage().getUser_id();
                 if (offset == 0) {
                     items.clear();
@@ -236,12 +234,10 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                         stroka += "," + l.get(i).getMessage().getUser_id();
                     }
                 }
-                final SharedPreferences Uid = getSharedPreferences("uid",Context.MODE_PRIVATE);
-                final int UID = Uid.getInt("uid_int",0);
+                final int UID = preferencesManager.getUserID();
 
                 stroka+=","+UID;
-                final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-                String TOKEN = Token.getString("token_string", "");
+                String TOKEN = preferencesManager.getToken();
                 Call<ServerResponse<ArrayList<User>>> call1 = service.getUser(TOKEN,
                         stroka,
                         "photo_100, online, photo_400_orig,photo_max_orig,city,country,education, universities, schools, bdate, contacts");
@@ -255,10 +251,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                         }
                         for (int i = 0; i < l1.size(); i++) {
                             if (l1.get(i).getId()==UID){
-                                final SharedPreferences Uid_gson = getSharedPreferences("uidgson", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = Uid_gson.edit();
-                                editor.putString("uidgson_string",new Gson().toJson(l1.get(i)));
-                                editor.apply();
+                                preferencesManager.setUserGson(new Gson().toJson(l1.get(i)));
                             }
                             names.add(l1.get(i));
                         }
@@ -285,7 +278,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
             }
 
             @Override
-            public void onFailure(Call<ServerResponse<ItemMess<ArrayList<item>>>> call, Throwable t) {
+            public void onFailure(Call<ServerResponse<ItemMess<ArrayList<Item>>>> call, Throwable t) {
                 Log.wtf("motya", t.getMessage());
                 refreshLayout.setRefreshing(false);
                 Toast toast = Toast.makeText(getApplicationContext(),
@@ -337,24 +330,18 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        // Handle navigation view Item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            Intent intent = new Intent();
-            intent.setClass(DialogsActivity.this, DialogsActivity.class);
-            startActivity(intent);
+            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this));
             DialogsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
-            Intent intent = new Intent();
-            intent.setClass(DialogsActivity.this, FriendsActivity.class);
-            startActivity(intent);
+            startActivity(IntentManager.getFriendIntent(DialogsActivity.this));
             DialogsActivity.this.finish();
         } else if (id == R.id.nav_settings) {
-            Intent intent = new Intent();
-            intent.setClass(DialogsActivity.this, SettingActivity.class);
-            startActivity(intent);
+            startActivity(IntentManager.getSettingIntent(DialogsActivity.this));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -384,7 +371,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
     }
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
-        private final SharedPreferences setting = getSharedPreferences("mysettings", Context.MODE_PRIVATE);
+
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
         SimpleDateFormat month = new SimpleDateFormat("MM");
         SimpleDateFormat day = new SimpleDateFormat("dd");
@@ -399,7 +386,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final item item = items.get(position);
+            final Item item = items.get(position);
             final Dialogs dialog = item.getMessage();
             User user = new User();
             for (int i = 0; i < names.size(); i++) {
@@ -412,22 +399,14 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(DialogsActivity.this, DialogMessageActivity.class);
-                    intent.putExtra("userID", dialog.getUser_id());
-                    intent.putExtra("Title", dialog.getTitle());
-                    intent.putExtra("userName", userFinal.getFirst_name() + " " + userFinal.getLast_name());
-                    intent.putExtra("ChatID", dialog.getChat_id());
-                    startActivity(intent);
+                    startActivity(IntentManager.getDialogMessageIntent(DialogsActivity.this,dialog.getUser_id(),dialog.getChat_id(),dialog.getTitle(),userFinal.getFirst_name() + " " + userFinal.getLast_name()));
                 }
             });
             holder.photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (dialog.getChat_id() == 0) {
-                        Intent intent = new Intent(DialogsActivity.this, UserActivity.class);
-                        intent.putExtra("userID", dialog.getUser_id());
-                        intent.putExtra("userJson", new Gson().toJson(userFinal));
-                        startActivity(intent);
+                        startActivity(IntentManager.getUserIntent(DialogsActivity.this,dialog.getUser_id(),new Gson().toJson(userFinal)));
                     }
                 }
             });
@@ -439,7 +418,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                     } else {
                         holder.online.setVisibility(View.INVISIBLE);
                     }
-                    if (setting.getBoolean("photouserOn", true)) {
+                    if (preferencesManager.getSettingPhotoUserOn()) {
                         Picasso.with(DialogsActivity.this)
                                 .load(user.getPhoto_100())
                                 .transform(new CircularTransformation())
@@ -457,7 +436,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                         holder.online.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    if (setting.getBoolean("photouserOn", true))
+                    if (preferencesManager.getSettingPhotoUserOn())
                         if (dialog.getPhoto_100() != null) {
                             Picasso.with(DialogsActivity.this)
                                     .load(dialog.getPhoto_100())

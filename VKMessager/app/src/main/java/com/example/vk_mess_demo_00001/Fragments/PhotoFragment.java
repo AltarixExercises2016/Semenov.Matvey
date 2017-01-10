@@ -1,4 +1,4 @@
-package com.example.vk_mess_demo_00001.Fragments;
+package com.example.vk_mess_demo_00001.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
