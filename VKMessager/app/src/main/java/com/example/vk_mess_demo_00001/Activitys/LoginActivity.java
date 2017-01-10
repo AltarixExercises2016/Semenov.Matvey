@@ -90,6 +90,6 @@ public class LoginActivity extends AppCompatActivity {
 //        Intent intent = new Intent();
 //        intent.setClass(getApplicationContext(), DialogsActivity.class);
         LoginActivity.this.finish();
-        startActivity(IntentManager.getDialogsIntent(getApplicationContext()));
+        startActivity(IntentManager.getDialogsIntent(getApplicationContext(),true));
     }
 }

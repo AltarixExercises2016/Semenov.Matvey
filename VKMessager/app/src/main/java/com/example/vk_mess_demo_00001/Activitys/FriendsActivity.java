@@ -265,11 +265,11 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            startActivity(IntentManager.getDialogsIntent(FriendsActivity.this));
+            startActivity(IntentManager.getDialogsIntent(FriendsActivity.this,false));
             FriendsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
-            startActivity(IntentManager.getFriendIntent(FriendsActivity.this));
+            startActivity(IntentManager.getFriendIntent(FriendsActivity.this,0,true));
             FriendsActivity.this.finish();
         } else if (id == R.id.nav_settings) {
             startActivity(IntentManager.getSettingIntent(FriendsActivity.this));

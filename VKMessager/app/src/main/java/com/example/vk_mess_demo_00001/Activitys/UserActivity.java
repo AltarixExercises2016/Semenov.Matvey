@@ -32,6 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.vk_mess_demo_00001.App.frwdMessages;
 import static com.example.vk_mess_demo_00001.App.service;
 
 public class UserActivity extends AppCompatActivity {
@@ -186,7 +187,7 @@ public class UserActivity extends AppCompatActivity {
 //                Intent intent = new Intent(UserActivity.this, DialogMessageActivity.class);
 //                intent.putExtra("userID", user_id);
 //                intent.putExtra("userName", user.getFirst_name() + " " + user.getLast_name());
-                startActivity(IntentManager.getDialogMessageIntent(UserActivity.this,user_id,0,"",user.getFirst_name() + " " + user.getLast_name()));
+                startActivity(IntentManager.getDialogMessageIntent(UserActivity.this,user_id,0,"",user.getFirst_name() + " " + user.getLast_name(),false));
             }
         });
         button1.setOnClickListener(new View.OnClickListener() {
@@ -194,7 +195,7 @@ public class UserActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                Intent intent = new Intent(UserActivity.this, FriendsActivity.class);
 //                intent.putExtra("userID", user_id);
-                startActivity(IntentManager.getFriendIntent(UserActivity.this));
+                startActivity(IntentManager.getFriendIntent(UserActivity.this, user_id, false));
             }
         });
     }

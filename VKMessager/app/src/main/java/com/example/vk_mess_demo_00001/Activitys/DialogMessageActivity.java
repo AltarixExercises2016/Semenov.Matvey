@@ -55,6 +55,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.vk_mess_demo_00001.App.frwdMessages;
 import static com.example.vk_mess_demo_00001.App.service;
 
 public class DialogMessageActivity extends AppCompatActivity {
@@ -132,20 +133,27 @@ public class DialogMessageActivity extends AppCompatActivity {
                 if (!frwd) {
                     refreshLayout.setRefreshing(true);
                     final EditText mess = (EditText) findViewById(R.id.editText);
-                    if (!mess.getText().toString().equals("")) {
+                    if ((!mess.getText().toString().equals(""))||(frwdMessages.size()>0)) {
                         String message = mess.getText().toString();
                         mess.setText("");
                         int kek = user_id;
                         if (chat_id != 0) {
                             kek = 0;
                         }
+
+                        String strIdMess="";
+                        for (int i=0;i<frwdMessages.size();i++){
+                            strIdMess+=","+frwdMessages.get(i);
+                        }
+
                         String TOKEN = preferencesManager.getToken();
-                        Call<ServerResponse> call = service.sendMessage(TOKEN, kek, message, chat_id, 2000000000 + chat_id);
+                        Call<ServerResponse> call = service.sendMessage(TOKEN, kek, message, chat_id, 2000000000 + chat_id,strIdMess);
 
                         call.enqueue(new Callback<ServerResponse>() {
                             @Override
                             public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
                                 Log.wtf("motya", response.raw().toString());
+                                frwdMessages.clear();
                                 off = 0;
                                 refresh(off);
                             }
@@ -390,10 +398,18 @@ public class DialogMessageActivity extends AppCompatActivity {
                     }
                 }
             }
+            final LinearLayout linearLayout = ((LinearLayout)DialogMessageActivity.this.findViewById(R.id.container));
+
+
             if (dialog.getRead_state() == 0) {
                 holder.foo.setBackgroundColor(ContextCompat.getColor(DialogMessageActivity.this, R.color.accent));
             }else {
                 holder.foo.setBackgroundColor(Color.WHITE);
+            }
+            for (int i=0;i<frwdMessages.size();i++){
+                if (dialog.getId()==frwdMessages.get(i)){
+                    holder.foo.setBackgroundColor(ContextCompat.getColor(DialogMessageActivity.this, R.color.primary_dark));
+                }
             }
             holder.line.removeAllViews();
             if (user.getOnline() != 0) {
@@ -413,6 +429,41 @@ public class DialogMessageActivity extends AppCompatActivity {
                         .into(holder.photo);
             }
             final User userFinal = user;
+            final ViewHolder viewHolder = holder;
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean chek = false;
+                    for (int i=0;i<frwdMessages.size();i++){
+                        if (frwdMessages.get(i)==dialog.getId()){
+                            frwdMessages.remove(i);
+                            viewHolder.foo.setBackgroundColor(Color.WHITE);
+                            chek=true;
+                            break;
+                        }
+                    }
+                    if (!chek){
+                        frwdMessages.add (dialog.getId());
+                        viewHolder.foo.setBackgroundColor(ContextCompat.getColor(DialogMessageActivity.this, R.color.primary_dark));
+                    }
+                    if (frwdMessages.size()>0){
+                        Button button = new Button(DialogMessageActivity.this);
+                        button.setText("Переслать");
+                        button.setBackgroundResource(R.drawable.circle);
+                        linearLayout.removeAllViews();
+                        linearLayout.addView(button);
+
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                startActivity(IntentManager.getDialogsIntent(DialogMessageActivity.this,true));
+                            }
+                        });
+                    }else {
+                        linearLayout.removeAllViews();
+                    }
+                }
+            });
             holder.photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

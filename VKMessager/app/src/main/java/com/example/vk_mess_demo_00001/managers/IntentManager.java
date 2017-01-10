@@ -10,23 +10,15 @@ import com.example.vk_mess_demo_00001.activitys.LoginActivity;
 import com.example.vk_mess_demo_00001.activitys.SettingActivity;
 import com.example.vk_mess_demo_00001.activitys.StartActivity;
 import com.example.vk_mess_demo_00001.activitys.UserActivity;
-import com.google.gson.Gson;
 
-/**
- * Created by matek on 10.01.2017.
- */
+import static com.example.vk_mess_demo_00001.App.frwdMessages;
 
 public class IntentManager {
-//    private static IntentManager instance;
-//
-//    public static void init (){
-//        if (instance == null){
-//            instance = new IntentManager();
-//        }
-//    }
 
-    public static Intent getDialogsIntent (Context context){
+
+    public static Intent getDialogsIntent (Context context, boolean frwdMessDetector){
         Intent intent = new Intent(context, DialogsActivity.class);
+        intent.putExtra("frwd",frwdMessDetector);
         return intent;
     }
 
@@ -42,17 +34,24 @@ public class IntentManager {
         return intent;
     }
 
-    public static Intent getFriendIntent(Context context){
+    public static Intent getFriendIntent(Context context,int userId, boolean clearStack){
         Intent intent = new Intent(context, FriendsActivity.class);
+        if (clearStack){
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);//тут надо почистить стэк
+        }
+        intent.putExtra("userID",userId);
         return intent;
     }
 
-    public static Intent getDialogMessageIntent (Context context, int userId, int chatId, String title, String userName){
+    public static Intent getDialogMessageIntent (Context context, int userId, int chatId, String title, String userName, boolean frwdMessDetector){
         Intent intent = new Intent(context, DialogMessageActivity.class);
         intent.putExtra("userID", userId);
         intent.putExtra("Title", title);
         intent.putExtra("userName", userName);
         intent.putExtra("ChatID", chatId);
+        if (!frwdMessDetector){
+            frwdMessages.clear();
+        }
         return intent;
     }
 

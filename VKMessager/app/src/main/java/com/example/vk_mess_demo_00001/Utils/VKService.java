@@ -39,7 +39,8 @@ public interface VKService {
                                      @Query("user_id") int user_id,
                                      @Query("message") String message,
                                      @Query("chat_id") int chat_id,
-                                     @Query("peer_id") int peer_id);
+                                     @Query("peer_id") int peer_id,
+                                     @Query("forward_messages") String forward_messages);
 
     @GET("account.setOnline?v=5.59")
     Call<ServerResponse> setOnline (@Query("access_token") String access_token);

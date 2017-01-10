@@ -51,6 +51,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.vk_mess_demo_00001.App.frwdMessages;
 import static com.example.vk_mess_demo_00001.App.service;
 
 public class DialogsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -69,7 +70,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
     protected void onCreate(Bundle savedInstanceState) {
 
         dataBase = DBHelper.getInstance().getWritableDatabase();
-        preferencesManager= PreferencesManager.getInstance();
+        preferencesManager = PreferencesManager.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dialogs);
 
@@ -96,7 +97,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         navigationView.setNavigationItemSelectedListener(this);
 
         final String uidgson = preferencesManager.getUserGson();
-        if (uidgson!="") {
+        if (uidgson != "") {
             final User iuser = new Gson().fromJson(uidgson, User.class);
             Picasso.with(DialogsActivity.this)
                     .load(iuser.getPhoto_100())
@@ -111,12 +112,12 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                     startActivity(intent);
                 }
             });
-            if (iuser.getOnline()==1){
+            if (iuser.getOnline() == 1) {
                 ((ImageView) navigationView.getHeaderView(0).findViewById(R.id.imageView21)).setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 ((ImageView) navigationView.getHeaderView(0).findViewById(R.id.imageView21)).setVisibility(View.INVISIBLE);
             }
-            ((TextView) navigationView.getHeaderView(0).findViewById(R.id.textView20)).setText(iuser.getFirst_name()+" "+iuser.getLast_name());
+            ((TextView) navigationView.getHeaderView(0).findViewById(R.id.textView20)).setText(iuser.getFirst_name() + " " + iuser.getLast_name());
             if (iuser.getCity() != (null)) {
                 ((TextView) navigationView.getHeaderView(0).findViewById(R.id.textView21)).setText(iuser.getCity().getTitle());
             } else {
@@ -236,7 +237,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                 }
                 final int UID = preferencesManager.getUserID();
 
-                stroka+=","+UID;
+                stroka += "," + UID;
                 String TOKEN = preferencesManager.getToken();
                 Call<ServerResponse<ArrayList<User>>> call1 = service.getUser(TOKEN,
                         stroka,
@@ -250,7 +251,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                             names.clear();
                         }
                         for (int i = 0; i < l1.size(); i++) {
-                            if (l1.get(i).getId()==UID){
+                            if (l1.get(i).getId() == UID) {
                                 preferencesManager.setUserGson(new Gson().toJson(l1.get(i)));
                             }
                             names.add(l1.get(i));
@@ -334,11 +335,11 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this));
+            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this,false));
             DialogsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
-            startActivity(IntentManager.getFriendIntent(DialogsActivity.this));
+            startActivity(IntentManager.getFriendIntent(DialogsActivity.this, 0, true));
             DialogsActivity.this.finish();
         } else if (id == R.id.nav_settings) {
             startActivity(IntentManager.getSettingIntent(DialogsActivity.this));
@@ -399,14 +400,14 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(IntentManager.getDialogMessageIntent(DialogsActivity.this,dialog.getUser_id(),dialog.getChat_id(),dialog.getTitle(),userFinal.getFirst_name() + " " + userFinal.getLast_name()));
+                    startActivity(IntentManager.getDialogMessageIntent(DialogsActivity.this, dialog.getUser_id(), dialog.getChat_id(), dialog.getTitle(), userFinal.getFirst_name() + " " + userFinal.getLast_name(),getIntent().getBooleanExtra("frwd",false)));
                 }
             });
             holder.photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (dialog.getChat_id() == 0) {
-                        startActivity(IntentManager.getUserIntent(DialogsActivity.this,dialog.getUser_id(),new Gson().toJson(userFinal)));
+                        startActivity(IntentManager.getUserIntent(DialogsActivity.this, dialog.getUser_id(), new Gson().toJson(userFinal)));
                     }
                 }
             });
