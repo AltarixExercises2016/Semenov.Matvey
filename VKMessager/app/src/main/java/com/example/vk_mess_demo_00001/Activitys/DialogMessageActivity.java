@@ -185,6 +185,12 @@ public class DialogMessageActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        adapter.notifyDataSetChanged();
+        super.onResume();
+    }
+
+    @Override
     public void onBackPressed() {
         if (adapter.fwd_mess.size() > 1) {
             adapter.fwd_mess.remove(adapter.fwd_mess.size() - 1);
@@ -430,6 +436,8 @@ public class DialogMessageActivity extends AppCompatActivity {
             }
             final User userFinal = user;
             final ViewHolder viewHolder = holder;
+
+            if (frwdMessages.size()==0) linearLayout.removeAllViews();
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -456,7 +464,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                startActivity(IntentManager.getDialogsIntent(DialogMessageActivity.this,true));
+                                startActivity(IntentManager.getDialogsIntent(DialogMessageActivity.this,true,false));
                             }
                         });
                     }else {

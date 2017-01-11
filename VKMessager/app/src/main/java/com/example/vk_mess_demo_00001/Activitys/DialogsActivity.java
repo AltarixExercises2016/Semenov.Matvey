@@ -190,26 +190,26 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
 
     @Override
     protected void onStop() {
-        dataBase.delete(DBHelper.TABLE_DIALOGS, null, null);
-        dataBase.delete(DBHelper.TABLE_USERS, null, null);
-        ContentValues contentValues = new ContentValues();
-        Gson gson = new Gson();
-
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).getMessage().getChat_id() == 0) {
-                contentValues.put(DBHelper.KEY_ID_USER, items.get(i).getMessage().getUser_id());
-            } else {
-                contentValues.put(DBHelper.KEY_ID_USER, items.get(i).getMessage().getChat_id() + 2000000000);
-            }
-            contentValues.put(DBHelper.KEY_OBJ, gson.toJson(items.get(i)));
-            dataBase.insert(DBHelper.TABLE_DIALOGS, null, contentValues);
-        }
-
-        for (int i = 0; i < names.size(); i++) {
-            contentValues.put(DBHelper.KEY_ID_USER, names.get(i).getId());
-            contentValues.put(DBHelper.KEY_OBJ, gson.toJson(names.get(i)));
-            dataBase.insert(DBHelper.TABLE_USERS, null, contentValues);
-        }
+//        dataBase.delete(DBHelper.TABLE_DIALOGS, null, null);
+//        dataBase.delete(DBHelper.TABLE_USERS, null, null);
+//        ContentValues contentValues = new ContentValues();
+//        Gson gson = new Gson();
+//
+//        for (int i = 0; i < items.size(); i++) {
+//            if (items.get(i).getMessage().getChat_id() == 0) {
+//                contentValues.put(DBHelper.KEY_ID_USER, items.get(i).getMessage().getUser_id());
+//            } else {
+//                contentValues.put(DBHelper.KEY_ID_USER, items.get(i).getMessage().getChat_id() + 2000000000);
+//            }
+//            contentValues.put(DBHelper.KEY_OBJ, gson.toJson(items.get(i)));
+//            dataBase.insert(DBHelper.TABLE_DIALOGS, null, contentValues);
+//        }
+//
+//        for (int i = 0; i < names.size(); i++) {
+//            contentValues.put(DBHelper.KEY_ID_USER, names.get(i).getId());
+//            contentValues.put(DBHelper.KEY_OBJ, gson.toJson(names.get(i)));
+//            dataBase.insert(DBHelper.TABLE_USERS, null, contentValues);
+//        }
         super.onStop();
     }
 
@@ -335,7 +335,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this,false));
+            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this,false,false));
             DialogsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
@@ -400,6 +400,9 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (getIntent().getBooleanExtra("frwd",false)) {
+                        DialogsActivity.this.finish();
+                    }
                     startActivity(IntentManager.getDialogMessageIntent(DialogsActivity.this, dialog.getUser_id(), dialog.getChat_id(), dialog.getTitle(), userFinal.getFirst_name() + " " + userFinal.getLast_name(),getIntent().getBooleanExtra("frwd",false)));
                 }
             });

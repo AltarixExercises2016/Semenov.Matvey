@@ -23,7 +23,7 @@ public class StartActivity extends AppCompatActivity {
             StartActivity.this.finish();
         }else {
 //            Intent intent = new Intent(this,DialogsActivity.class);
-            startActivity(IntentManager.getDialogsIntent(StartActivity.this,true));
+            startActivity(IntentManager.getDialogsIntent(StartActivity.this,false,false));
             StartActivity.this.finish();
         }
     }
