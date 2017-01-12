@@ -98,7 +98,7 @@ public class DialogMessageActivity extends AppCompatActivity {
             title = getIntent().getStringExtra("Title");
         } else {
             if (user_id < 0) {
-                title = "Сообщество";
+                title = getString(R.string.COMMUNITY);
             } else {
                 title = getIntent().getStringExtra("userName");
             }
@@ -164,19 +164,15 @@ public class DialogMessageActivity extends AppCompatActivity {
                             public void onFailure(Call<ServerResponse> call, Throwable t) {
                                 refreshLayout.setRefreshing(false);
                                 Toast toast = Toast.makeText(getApplicationContext(),
-                                        "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                                        getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                                 toast.setGravity(Gravity.CENTER, 0, 0);
-//                                LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                                ImageView catImageView = new ImageView(getApplicationContext());
-//                                catImageView.setImageResource(R.drawable.catsad);
-//                                toastContainer.addView(catImageView, 0);
                                 toast.show();
                             }
                         });
                     } else {
                         refreshLayout.setRefreshing(false);
                         Toast toast = Toast.makeText(getApplicationContext(),
-                                "Void message", Toast.LENGTH_SHORT);
+                                getString(R.string.VOID_MESSAGE), Toast.LENGTH_SHORT);
                         toast.show();
                     }
                 }else {
@@ -217,8 +213,6 @@ public class DialogMessageActivity extends AppCompatActivity {
 
 
     public void nameRec(Dialogs contain_mess) {
-//        String str = "";
-//        str = "," + contain_mess.getUser_id();
         boolean chek=false;
         for (int i = 0; i < namesIds.size();i++){
             if (namesIds.get(i)==contain_mess.getUser_id()){
@@ -294,12 +288,8 @@ public class DialogMessageActivity extends AppCompatActivity {
                             Log.wtf("chek", t.getLocalizedMessage());
                             refreshLayout.setRefreshing(false);
                             Toast toast = Toast.makeText(getApplicationContext(),
-                                    "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                                    getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER, 0, 0);
-//                            LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                            ImageView catImageView = new ImageView(getApplicationContext());
-//                            catImageView.setImageResource(R.drawable.catsad);
-//                            toastContainer.addView(catImageView, 0);
                             toast.show();
                         }
                     });
@@ -309,12 +299,8 @@ public class DialogMessageActivity extends AppCompatActivity {
                 public void onFailure(Call<ServerResponse<ItemMess<ArrayList<Dialogs>>>> call, Throwable t) {
                     refreshLayout.setRefreshing(false);
                     Toast toast = Toast.makeText(getApplicationContext(),
-                            "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                            getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
-//                    LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                    ImageView catImageView = new ImageView(getApplicationContext());
-//                    catImageView.setImageResource(R.drawable.catsad);
-//                    toastContainer.addView(catImageView, 0);
                     toast.show();
                 }
             });
@@ -371,7 +357,6 @@ public class DialogMessageActivity extends AppCompatActivity {
     }
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
-        private final SharedPreferences setting = getSharedPreferences("mysettings", Context.MODE_PRIVATE);
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
         SimpleDateFormat month = new SimpleDateFormat("MM");
         SimpleDateFormat day = new SimpleDateFormat("dd");
@@ -439,7 +424,7 @@ public class DialogMessageActivity extends AppCompatActivity {
             } else {
                 holder.online.setVisibility(View.INVISIBLE);
             }
-            if (setting.getBoolean("photouserOn", true)) {
+            if (preferencesManager.getSettingPhotoUserOn()) {
                 Picasso.with(DialogMessageActivity.this)
                         .load(user.getPhoto_100())
                         .transform(new CircularTransformation())
@@ -472,7 +457,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                     }
                     if (frwdMessages.size()>0){
                         Button button = new Button(DialogMessageActivity.this);
-                        button.setText("Переслать");
+                        button.setText(getString(R.string.FORWARD));
                         button.setBackgroundResource(R.drawable.circle);
                         linearLayout.removeAllViews();
                         linearLayout.addView(button);
@@ -563,7 +548,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                 View cont = inflater.inflate(R.layout.attachment_conteiner_dinamic, null);
                 TextView text = (TextView) cont.findViewById(R.id.textView3);
                 text.setTextColor(Color.BLUE);
-                text.setText("Пересланые сообщения");
+                text.setText(getString(R.string.FORWARD_MESSAGES));
                 holder.line.addView(cont);
                 text.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -610,7 +595,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                             View cont = inflater.inflate(R.layout.attachment_conteiner_dinamic, null);
                             ImageView photochka = (ImageView) cont.findViewById(R.id.imageView);
                             TextView text = (TextView) cont.findViewById(R.id.textView3);
-                            text.setText("Photo");
+                            text.setText(getString(R.string.PHOTO));
                             final String finalphoto = photo;
                             Picasso.with(DialogMessageActivity.this)
                                     .load(photomess)
@@ -633,7 +618,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                         View cont = inflater.inflate(R.layout.attachment_conteiner_dinamic, null);
                         ImageView photochka = (ImageView) cont.findViewById(R.id.imageView);
                         TextView text = (TextView) cont.findViewById(R.id.textView3);
-                        text.setText("Stiker");
+                        text.setText(R.string.STICKER);
                         Picasso.with(DialogMessageActivity.this)
                                 .load(dialog.getAttachments().get(i).getSticker().getPhoto_256())
                                 .placeholder(R.drawable.loadshort)
@@ -667,7 +652,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 Toast toast = Toast.makeText(getApplicationContext(),
-                                        "Loading...", Toast.LENGTH_LONG);
+                                        getString(R.string.LOADING), Toast.LENGTH_LONG);
                                 toast.show();
                                 final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
                                 String TOKEN = Token.getString("token_string", "");
@@ -686,12 +671,8 @@ public class DialogMessageActivity extends AppCompatActivity {
                                     @Override
                                     public void onFailure(Call<ServerResponse<ItemMess<ArrayList<VideoInformation>>>> call, Throwable t) {
                                         Toast toast = Toast.makeText(getApplicationContext(),
-                                                "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                                                getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                                         toast.setGravity(Gravity.CENTER, 0, 0);
-//                                        LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                                        ImageView catImageView = new ImageView(getApplicationContext());
-//                                        catImageView.setImageResource(R.drawable.catsad);
-//                                        toastContainer.addView(catImageView, 0);
                                         toast.show();
                                     }
                                 });
@@ -810,7 +791,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                         break;
                     }
                     case "wall":{
-                        bodyContainer += "\n'" + dialog.getAttachments().get(i).getType() + "'";
+                        bodyContainer += "\n" + dialog.getAttachments().get(i).getType();
                         break;
                     }
                     case "gift":{
@@ -818,7 +799,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                         View cont = inflater.inflate(R.layout.attachment_conteiner_dinamic, null);
                         ImageView photochka = (ImageView) cont.findViewById(R.id.imageView);
                         TextView text = (TextView) cont.findViewById(R.id.textView3);
-                        text.setText("Gift");
+                        text.setText(R.string.GIFT);
                         Picasso.with(DialogMessageActivity.this)
                                 .load(dialog.getAttachments().get(i).getGift().getThumb_256())
                                 .placeholder(R.drawable.loadshort)

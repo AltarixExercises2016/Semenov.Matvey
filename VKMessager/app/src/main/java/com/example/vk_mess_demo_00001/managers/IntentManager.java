@@ -19,7 +19,7 @@ public class IntentManager {
     public static Intent getDialogsIntent (Context context, boolean frwdMessDetector, boolean clearStack){
         Intent intent = new Intent(context, DialogsActivity.class);
         if (clearStack){
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//тут надо почистить стэк
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         }
         intent.putExtra("frwd",frwdMessDetector);
         return intent;
@@ -40,7 +40,7 @@ public class IntentManager {
     public static Intent getFriendIntent(Context context,int userId, boolean clearStack){
         Intent intent = new Intent(context, FriendsActivity.class);
         if (clearStack){
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);//тут надо почистить стэк
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         }
         intent.putExtra("userID",userId);
         return intent;

@@ -57,8 +57,8 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
     //    Retrofit retrofit;
     public static int page = 1; //на какой странице мы сейчас
     public static ArrayList<User> info;
-    public static String ALL_FRIENDS = "All friends";
-    public static String ONLINE_FRIENDS = "Online";
+    public static String ALL_FRIENDS="";
+    public static String ONLINE_FRIENDS="";
     SQLiteDatabase dataBase;
     PreferencesManager preferencesManager;
     int user_id;
@@ -69,7 +69,7 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
         user_id = getIntent().getIntExtra("userID", 0);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
-        setTitle("Friends");
+        setTitle(getString(R.string.FRIENDS));
         preferencesManager = PreferencesManager.getInstance();
         info = new ArrayList<>();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -198,11 +198,11 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
     }
 
     public void setAllFriendsCount(int cnt) {
-        ALL_FRIENDS = "All friends" + " (" + cnt + ")";
+        ALL_FRIENDS = getString(R.string.ALL_FRIENDS) + " (" + cnt + ")";
     }
 
     public void setOnlineFriendsCount(int cnt) {
-        ONLINE_FRIENDS = "Online" + " (" + cnt + ")";
+        ONLINE_FRIENDS = getString(R.string.ONLINE) + " (" + cnt + ")";
     }
 
     private void refresh(int user_id) {
@@ -234,7 +234,7 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
                 Log.wtf("motya", t.getMessage());
                 refreshLayout.setRefreshing(false);
                 Toast toast = Toast.makeText(getApplicationContext(),
-                        "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                        getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
 //                LinearLayout toastContainer = (LinearLayout) toast.getView();
 //                ImageView catImageView = new ImageView(getApplicationContext());

@@ -39,7 +39,7 @@
                 android:layout_marginBottom="5dp"
                 android:background="@drawable/circle"
                 android:layout_alignParentBottom="true"
-                android:text="Send message" />
+                android:text="@string/send_message" />
 
             <Button
                 android:id="@+id/button6"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/circle"
                 android:layout_alignParentBottom="true"
-                android:text="Friend list" />
+                android:text="@string/friend_list" />
         </LinearLayout>
     </LinearLayout>
 

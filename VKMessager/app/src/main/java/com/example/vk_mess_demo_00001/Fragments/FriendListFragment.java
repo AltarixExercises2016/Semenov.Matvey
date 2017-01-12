@@ -81,7 +81,7 @@ public class FriendListFragment extends Fragment {
         if (pageNumber == 0) {
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.container);
             EditText editText = new EditText(getContext());
-            editText.setHint("Filter");
+            editText.setHint(getString(R.string.FILTER));
             editText.setTag("newEditText");
             linearLayout.addView(editText);
             final ArrayList<User> usersFinal = new ArrayList<>();
@@ -159,9 +159,6 @@ public class FriendListFragment extends Fragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    Intent intent = new Intent(getContext(), UserActivity.class);
-//                    intent.putExtra("userID", user.getId());
-//                    intent.putExtra("userJson", new Gson().toJson(user));
                     startActivity(IntentManager.getUserIntent(getContext(),user.getId(),new Gson().toJson(user)));
                 }
             });

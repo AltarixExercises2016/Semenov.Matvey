@@ -36,13 +36,8 @@ import static com.example.vk_mess_demo_00001.App.frwdMessages;
 import static com.example.vk_mess_demo_00001.App.service;
 
 public class UserActivity extends AppCompatActivity {
-//    final public static Retrofit retrofit = new Retrofit.Builder()
-//            .baseUrl("https://api.vk.com/method/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build();
-//
-//    final public static VKService service = retrofit.create(VKService.class);
     PreferencesManager preferencesManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,9 +60,9 @@ public class UserActivity extends AppCompatActivity {
         final TextView tv9 = new TextView(UserActivity.this);
         lineBottom.addView(tv);
         if (user.getOnline() == 1) {
-            tv.setText("'Online'");
+            tv.setText(R.string.ONLINE);
         } else {
-            tv.setText("'Offline'");
+            tv.setText(R.string.OFFLINE);
         }
         if (user.getCity() != null) {
             tv1.setText(user.getCity().getTitle());
@@ -78,11 +73,11 @@ public class UserActivity extends AppCompatActivity {
             lineBottom.addView(tv2);
         }
         if ((user.getBdate() != "") && (user.getBdate() != null)) {
-            tv3.setText("Дата рождения: " + user.getBdate());
+            tv3.setText(getString(R.string.BIRTHSDAY) + user.getBdate());
             lineBottom.addView(tv3);
         }
         if ((user.getUniversity_name() != "") && (user.getUniversity_name() != null)) {
-            tv4.setText("Университет: " + user.getUniversity_name());
+            tv4.setText(getString(R.string.UNIVERSITY) + user.getUniversity_name());
             lineBottom.addView(tv4);
         }
         if ((user.getFaculty_name() != "") && (user.getFaculty_name() != null)) {
@@ -98,28 +93,28 @@ public class UserActivity extends AppCompatActivity {
             lineBottom.addView(tv7);
         }
         if ((user.getMobile_phone() != "") && (user.getMobile_phone() != null)) {
-            tv8.setText("Мобильный: " + user.getMobile_phone());
+            tv8.setText(getString(R.string.MOBILE_PHONE) + user.getMobile_phone());
             lineBottom.addView(tv8);
         }
         if ((user.getHome_phone() != "") && (user.getHome_phone() != null)) {
-            tv9.setText("Домашний: " + user.getHome_phone());
+            tv9.setText(getString(R.string.HOME_PHONE) + user.getHome_phone());
             lineBottom.addView(tv9);
         }
-        String photoUserUrl="";
+        String photoUserUrl = "";
         if (user.getPhoto_max_orig() != null) {
-            photoUserUrl=user.getPhoto_max_orig();
+            photoUserUrl = user.getPhoto_max_orig();
         } else {
             if (user.getPhoto_400_orig() != null) {
-                photoUserUrl=user.getPhoto_400_orig();
+                photoUserUrl = user.getPhoto_400_orig();
             } else {
                 if (user.getPhoto_200() != null) {
-                    photoUserUrl=user.getPhoto_200();
+                    photoUserUrl = user.getPhoto_200();
                 } else {
                     if (user.getPhoto_100() != null) {
-                        photoUserUrl=user.getPhoto_100();
+                        photoUserUrl = user.getPhoto_100();
                     } else {
                         if (user.getPhoto_50() != null) {
-                            photoUserUrl=user.getPhoto_50();
+                            photoUserUrl = user.getPhoto_50();
                         }
                     }
                 }
@@ -168,12 +163,8 @@ public class UserActivity extends AppCompatActivity {
                     public void onFailure(Call<ServerResponse<ItemMess<ArrayList<PhotoMess>>>> call1, Throwable t) {
                         Log.wtf("motya", t.getMessage());
                         Toast toast = Toast.makeText(getApplicationContext(),
-                                "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                                getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
-//                        LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                        ImageView catImageView = new ImageView(getApplicationContext());
-//                        catImageView.setImageResource(R.drawable.catsad);
-//                        toastContainer.addView(catImageView, 0);
                         toast.show();
                     }
                 });
@@ -184,17 +175,12 @@ public class UserActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(UserActivity.this, DialogMessageActivity.class);
-//                intent.putExtra("userID", user_id);
-//                intent.putExtra("userName", user.getFirst_name() + " " + user.getLast_name());
-                startActivity(IntentManager.getDialogMessageIntent(UserActivity.this,user_id,0,"",user.getFirst_name() + " " + user.getLast_name(),false));
+                startActivity(IntentManager.getDialogMessageIntent(UserActivity.this, user_id, 0, "", user.getFirst_name() + " " + user.getLast_name(), false));
             }
         });
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(UserActivity.this, FriendsActivity.class);
-//                intent.putExtra("userID", user_id);
                 startActivity(IntentManager.getFriendIntent(UserActivity.this, user_id, false));
             }
         });

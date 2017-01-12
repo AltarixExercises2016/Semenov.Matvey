@@ -148,7 +148,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                         public void onFailure(Call<ServerResponse> call, Throwable t) {
                             refreshLayout.setRefreshing(false);
                             Toast toast = Toast.makeText(getApplicationContext(),
-                                    "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                                    getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER, 0, 0);
 //                            LinearLayout toastContainer = (LinearLayout) toast.getView();
 //                            ImageView catImageView = new ImageView(getApplicationContext());
@@ -297,12 +297,8 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                         Log.wtf("motya", t.getMessage());
                         refreshLayout.setRefreshing(false);
                         Toast toast = Toast.makeText(getApplicationContext(),
-                                "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                                getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
-//                        LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                        ImageView catImageView = new ImageView(getApplicationContext());
-//                        catImageView.setImageResource(R.drawable.catsad);
-//                        toastContainer.addView(catImageView, 0);
                         toast.show();
                     }
                 });
@@ -313,12 +309,8 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                 Log.wtf("motya", t.getMessage());
                 refreshLayout.setRefreshing(false);
                 Toast toast = Toast.makeText(getApplicationContext(),
-                        "              Internet connection is lost              ", Toast.LENGTH_SHORT);
+                        getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
-//                LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                ImageView catImageView = new ImageView(getApplicationContext());
-//                catImageView.setImageResource(R.drawable.catsad);
-//                toastContainer.addView(catImageView, 0);
                 toast.show();
             }
         });
@@ -365,7 +357,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this, false, false));
+            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this, false, true));
             DialogsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
@@ -490,27 +482,27 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                         .load("https://vk.com/images/soviet_100.png")
                         .transform(new CircularTransformation())
                         .into(holder.photo);
-                holder.name.setText("Сообщество");
+                holder.name.setText(getString(R.string.COMMUNITY));
                 holder.online.setVisibility(View.INVISIBLE);
             }
             if (dialog.getOut() == 0) {
                 if (dialog.getAttachments().size() > 0) {
-                    holder.body.setText("'" + dialog.getAttachments().get(0).getType() + "'");
+                    holder.body.setText(dialog.getAttachments().get(0).getType());
                 } else {
                     if (!dialog.getFwd_messages().isEmpty()) {
-                        holder.body.setText("'Пересланые сообщения'");
+                        holder.body.setText(getString(R.string.FORWARD_MESSAGES));
                     } else {
                         holder.body.setText(dialog.getBody());
                     }
                 }
             } else {
                 if (dialog.getAttachments().size() > 0) {
-                    holder.body.setText("Вы: " + "'" + dialog.getAttachments().get(0).getType() + "'");
+                    holder.body.setText(getString(R.string.YOU) +  dialog.getAttachments().get(0).getType() );
                 } else {
                     if (!dialog.getFwd_messages().isEmpty()) {
-                        holder.body.setText("Вы: " + "'Пересланые сообщения'");
+                        holder.body.setText(getString(R.string.YOU) + getString(R.string.FORWARD_MESSAGES));
                     } else {
-                        holder.body.setText("Вы: " + dialog.getBody());
+                        holder.body.setText(getString(R.string.YOU) + dialog.getBody());
                     }
                 }
             }

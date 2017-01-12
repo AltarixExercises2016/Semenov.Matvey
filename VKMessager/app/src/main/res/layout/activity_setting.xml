@@ -18,7 +18,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:switchTextAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:text="Отображать фото профилей"
+        android:text="@string/show_profile_photos"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColorLink="?attr/colorPrimary" />
 
@@ -33,7 +33,7 @@
         android:layout_below="@+id/switch1"
         android:layout_marginTop="10dp"
         android:switchTextAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:text="Отображать прекрепленные фото"
+        android:text="@string/display_attached_photo"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <Switch
@@ -47,7 +47,7 @@
         android:layout_below="@+id/switch3"
         android:layout_marginTop="10dp"
         android:switchTextAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:text="Быть Online "
+        android:text="@string/online"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColorLink="?attr/colorPrimary" />
 
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:gravity="center"
-            android:text="Чтобы выйти, нажмити кнопку"
+            android:text="@string/press_the_button_to_exit"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         <Button
@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="Out"
+            android:text="@string/out"
             style="@android:style/Widget.Holo.Button" />
     </LinearLayout>
 </RelativeLayout>

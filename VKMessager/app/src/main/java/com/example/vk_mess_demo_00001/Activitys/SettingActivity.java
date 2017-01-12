@@ -20,7 +20,7 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Settings");
+        setTitle(getString(R.string.SETTINGS));
         setContentView(R.layout.activity_setting);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Switch photouser = (Switch) findViewById(R.id.switch1);
