@@ -1,11 +1,13 @@
 package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.ref.SoftReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -147,10 +150,10 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                             Toast toast = Toast.makeText(getApplicationContext(),
                                     "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER, 0, 0);
-                            LinearLayout toastContainer = (LinearLayout) toast.getView();
-                            ImageView catImageView = new ImageView(getApplicationContext());
-                            catImageView.setImageResource(R.drawable.catsad);
-                            toastContainer.addView(catImageView, 0);
+//                            LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                            ImageView catImageView = new ImageView(getApplicationContext());
+//                            catImageView.setImageResource(R.drawable.catsad);
+//                            toastContainer.addView(catImageView, 0);
                             toast.show();
                         }
                     });
@@ -178,7 +181,8 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                 Log.i("motya", "" + names.get(i).getFirst_name());
                 cursor1.moveToNext();
             }
-            off = (items.size() / 20 - 1) * 20;
+//            off = (items.size() / 20 - 1) * 20;
+            off=0;
             refresh(off);
         } else {
             off = 0;
@@ -190,28 +194,54 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
 
     @Override
     protected void onStop() {
-//        dataBase.delete(DBHelper.TABLE_DIALOGS, null, null);
-//        dataBase.delete(DBHelper.TABLE_USERS, null, null);
-//        ContentValues contentValues = new ContentValues();
-//        Gson gson = new Gson();
-//
-//        for (int i = 0; i < items.size(); i++) {
-//            if (items.get(i).getMessage().getChat_id() == 0) {
-//                contentValues.put(DBHelper.KEY_ID_USER, items.get(i).getMessage().getUser_id());
-//            } else {
-//                contentValues.put(DBHelper.KEY_ID_USER, items.get(i).getMessage().getChat_id() + 2000000000);
-//            }
-//            contentValues.put(DBHelper.KEY_OBJ, gson.toJson(items.get(i)));
-//            dataBase.insert(DBHelper.TABLE_DIALOGS, null, contentValues);
-//        }
-//
-//        for (int i = 0; i < names.size(); i++) {
-//            contentValues.put(DBHelper.KEY_ID_USER, names.get(i).getId());
-//            contentValues.put(DBHelper.KEY_OBJ, gson.toJson(names.get(i)));
-//            dataBase.insert(DBHelper.TABLE_USERS, null, contentValues);
-//        }
+        new UpdateDataBase(items,names).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         super.onStop();
     }
+
+    class UpdateDataBase extends AsyncTask<Void, Void, Void>{
+        ArrayList<Item> items;
+        ArrayList<User> names;
+        public UpdateDataBase (ArrayList<Item> itemArrayList, ArrayList<User> userArrayList){
+            items = new ArrayList<>();
+            names = new ArrayList<>();
+            items.addAll(itemArrayList);
+            names.addAll(userArrayList);
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+            dataBase.beginTransaction();
+            try {
+                dataBase.delete(DBHelper.TABLE_DIALOGS, null, null);
+                dataBase.delete(DBHelper.TABLE_USERS, null, null);
+                ContentValues contentValues = new ContentValues();
+                Gson gson = new Gson();
+
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).getMessage().getChat_id() == 0) {
+                        contentValues.put(DBHelper.KEY_ID_USER, items.get(i).getMessage().getUser_id());
+                    } else {
+                        contentValues.put(DBHelper.KEY_ID_USER, items.get(i).getMessage().getChat_id() + 2000000000);
+                    }
+                    contentValues.put(DBHelper.KEY_OBJ, gson.toJson(items.get(i)));
+                    dataBase.insert(DBHelper.TABLE_DIALOGS, null, contentValues);
+                }
+
+                for (int i = 0; i < names.size(); i++) {
+                    contentValues.put(DBHelper.KEY_ID_USER, names.get(i).getId());
+                    Log.i("motya", "" + names.get(i).getFirst_name());
+                    contentValues.put(DBHelper.KEY_OBJ, gson.toJson(names.get(i)));
+                    dataBase.insert(DBHelper.TABLE_USERS, null, contentValues);
+                }
+                dataBase.setTransactionSuccessful();
+            }catch (Exception e){
+
+            }finally {
+                dataBase.endTransaction();
+            }
+            return null;
+        }
+    }
+
 
     public void refresh(final int offset) {
         refreshLayout.setRefreshing(true);
@@ -269,10 +299,10 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                         Toast toast = Toast.makeText(getApplicationContext(),
                                 "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
-                        LinearLayout toastContainer = (LinearLayout) toast.getView();
-                        ImageView catImageView = new ImageView(getApplicationContext());
-                        catImageView.setImageResource(R.drawable.catsad);
-                        toastContainer.addView(catImageView, 0);
+//                        LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                        ImageView catImageView = new ImageView(getApplicationContext());
+//                        catImageView.setImageResource(R.drawable.catsad);
+//                        toastContainer.addView(catImageView, 0);
                         toast.show();
                     }
                 });
@@ -285,10 +315,10 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                 Toast toast = Toast.makeText(getApplicationContext(),
                         "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
-                LinearLayout toastContainer = (LinearLayout) toast.getView();
-                ImageView catImageView = new ImageView(getApplicationContext());
-                catImageView.setImageResource(R.drawable.catsad);
-                toastContainer.addView(catImageView, 0);
+//                LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                ImageView catImageView = new ImageView(getApplicationContext());
+//                catImageView.setImageResource(R.drawable.catsad);
+//                toastContainer.addView(catImageView, 0);
                 toast.show();
             }
         });
@@ -335,7 +365,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this,false,false));
+            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this, false, false));
             DialogsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
@@ -400,10 +430,10 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (getIntent().getBooleanExtra("frwd",false)) {
+                    if (getIntent().getBooleanExtra("frwd", false)) {
                         DialogsActivity.this.finish();
                     }
-                    startActivity(IntentManager.getDialogMessageIntent(DialogsActivity.this, dialog.getUser_id(), dialog.getChat_id(), dialog.getTitle(), userFinal.getFirst_name() + " " + userFinal.getLast_name(),getIntent().getBooleanExtra("frwd",false)));
+                    startActivity(IntentManager.getDialogMessageIntent(DialogsActivity.this, dialog.getUser_id(), dialog.getChat_id(), dialog.getTitle(), userFinal.getFirst_name() + " " + userFinal.getLast_name(), getIntent().getBooleanExtra("frwd", false)));
                 }
             });
             holder.photo.setOnClickListener(new View.OnClickListener() {

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -70,6 +71,7 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
         setContentView(R.layout.activity_friends);
         setTitle("Friends");
         preferencesManager = PreferencesManager.getInstance();
+        info = new ArrayList<>();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         pager = (ViewPager) findViewById(R.id.pager);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
@@ -123,7 +125,8 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
         if (user_id==0) {
             Cursor cursor = dataBase.query(DBHelper.TABLE_FRIENDS, null, null, null, null, null, null);
             if (cursor.moveToFirst()) {
-                info = new ArrayList<>();
+//                info = new ArrayList<>();
+                info.clear();
                 Gson gson = new Gson();
                 int user = cursor.getColumnIndex(DBHelper.KEY_OBJ);
                 for (int i = 0; i < cursor.getCount(); i++) {
@@ -145,18 +148,53 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
 
     @Override
     protected void onStop() {
-        if (user_id==0) {
-            dataBase.delete(DBHelper.TABLE_FRIENDS, null, null);
-            ContentValues contentValues = new ContentValues();
-            Gson gson = new Gson();
-
-            for (int i = 0; i < info.size(); i++) {
-                contentValues.put(DBHelper.KEY_ID_USER, info.get(i).getId());
-                contentValues.put(DBHelper.KEY_OBJ, gson.toJson(info.get(i)));
-                dataBase.insert(DBHelper.TABLE_FRIENDS, null, contentValues);
-            }
-        }
+//        if (user_id==0) {
+//            dataBase.delete(DBHelper.TABLE_FRIENDS, null, null);
+//            ContentValues contentValues = new ContentValues();
+//            Gson gson = new Gson();
+//
+//            for (int i = 0; i < info.size(); i++) {
+//                contentValues.put(DBHelper.KEY_ID_USER, info.get(i).getId());
+//                contentValues.put(DBHelper.KEY_OBJ, gson.toJson(info.get(i)));
+//                dataBase.insert(DBHelper.TABLE_FRIENDS, null, contentValues);
+//            }
+//        }
+        new UpdateDataBase(user_id,info).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         super.onStop();
+    }
+
+    class UpdateDataBase extends AsyncTask<Void,Void,Void>{
+        int user_id;
+        ArrayList<User> userUpdate;
+        public UpdateDataBase (int userId, ArrayList<User> userArrayList){
+            userUpdate = new ArrayList<>();
+            userUpdate.addAll(userArrayList);
+            user_id=userId;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            if (user_id==0) {
+                dataBase.beginTransaction();
+                try {
+                    dataBase.delete(DBHelper.TABLE_FRIENDS, null, null);
+                    ContentValues contentValues = new ContentValues();
+                    Gson gson = new Gson();
+
+                    for (int i = 0; i < userUpdate.size(); i++) {
+                        contentValues.put(DBHelper.KEY_ID_USER, userUpdate.get(i).getId());
+                        contentValues.put(DBHelper.KEY_OBJ, gson.toJson(userUpdate.get(i)));
+                        dataBase.insert(DBHelper.TABLE_FRIENDS, null, contentValues);
+                    }
+                    dataBase.setTransactionSuccessful();
+                }catch (Exception e){
+
+                }finally {
+                    dataBase.endTransaction();
+                }
+            }
+            return null;
+        }
     }
 
     public void setAllFriendsCount(int cnt) {
@@ -170,18 +208,21 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
     private void refresh(int user_id) {
         refreshLayout.setRefreshing(true);
         String TOKEN = preferencesManager.getToken();
-        Call<ServerResponse<ItemMess<ArrayList<User>>>> call = service.getFriends(TOKEN, user_id, "online, photo_200, city");
+        Call<ServerResponse<ItemMess<ArrayList<User>>>> call = service.getFriends(TOKEN, user_id, "photo_100,photo_200,photo_400_orig,photo_max_orig, online,city,country,education, universities, schools,bdate,contacts");
 
         call.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<User>>>>() {
             @Override
             public void onResponse(Call<ServerResponse<ItemMess<ArrayList<User>>>> call, Response<ServerResponse<ItemMess<ArrayList<User>>>> response) {
                 Log.wtf("motya", response.raw().toString());
                 ArrayList<User> l = response.body().getResponse().getitem();
-                info = l;
+                info.clear();
+                info.addAll(l);
+                Log.wtf ("getCount",""+info.size());
                 if (pager != null) {
                     page = pager.getCurrentItem();
                 }
                 pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+
                 pager.setAdapter(pagerAdapter);
                 pager.setCurrentItem(page);
                 refreshLayout.setRefreshing(false);
@@ -195,10 +236,10 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
                 Toast toast = Toast.makeText(getApplicationContext(),
                         "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
-                LinearLayout toastContainer = (LinearLayout) toast.getView();
-                ImageView catImageView = new ImageView(getApplicationContext());
-                catImageView.setImageResource(R.drawable.catsad);
-                toastContainer.addView(catImageView, 0);
+//                LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                ImageView catImageView = new ImageView(getApplicationContext());
+//                catImageView.setImageResource(R.drawable.catsad);
+//                toastContainer.addView(catImageView, 0);
                 toast.show();
             }
         });

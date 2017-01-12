@@ -71,6 +71,7 @@ public class DialogMessageActivity extends AppCompatActivity {
     int off;
     ArrayList<Dialogs> items;
     ArrayList<User> names;
+    ArrayList<Integer> namesIds;
     PreferencesManager preferencesManager;
 
     @Override
@@ -85,6 +86,7 @@ public class DialogMessageActivity extends AppCompatActivity {
         chat_id = getIntent().getIntExtra("ChatID", 0);
         items = new ArrayList<>();
         names = new ArrayList<>();
+        namesIds = new ArrayList<>();
         adapter = new Adapter();
         recyclerView = (RecyclerView) findViewById(R.id.list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -164,10 +166,10 @@ public class DialogMessageActivity extends AppCompatActivity {
                                 Toast toast = Toast.makeText(getApplicationContext(),
                                         "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                                 toast.setGravity(Gravity.CENTER, 0, 0);
-                                LinearLayout toastContainer = (LinearLayout) toast.getView();
-                                ImageView catImageView = new ImageView(getApplicationContext());
-                                catImageView.setImageResource(R.drawable.catsad);
-                                toastContainer.addView(catImageView, 0);
+//                                LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                                ImageView catImageView = new ImageView(getApplicationContext());
+//                                catImageView.setImageResource(R.drawable.catsad);
+//                                toastContainer.addView(catImageView, 0);
                                 toast.show();
                             }
                         });
@@ -214,13 +216,21 @@ public class DialogMessageActivity extends AppCompatActivity {
     }
 
 
-    public String nameRec(Dialogs contain_mess) {
-        String str = "";
-        str = "," + contain_mess.getUser_id();
-        for (int i = 0; i < contain_mess.getFwd_messages().size(); i++) {
-            str += nameRec(contain_mess.getFwd_messages().get(i));
+    public void nameRec(Dialogs contain_mess) {
+//        String str = "";
+//        str = "," + contain_mess.getUser_id();
+        boolean chek=false;
+        for (int i = 0; i < namesIds.size();i++){
+            if (namesIds.get(i)==contain_mess.getUser_id()){
+                chek=true;
+            }
         }
-        return str;
+        if (!chek) {
+            namesIds.add(contain_mess.getUser_id());
+        }
+        for (int i = 0; i < contain_mess.getFwd_messages().size(); i++) {
+            nameRec(contain_mess.getFwd_messages().get(i));
+        }
     }
 
     public void refresh(final int offset) {
@@ -237,19 +247,24 @@ public class DialogMessageActivity extends AppCompatActivity {
                     Log.wtf("motya", response.raw().toString());
                     ArrayList<Dialogs> l = response.body().getResponse().getitem();
                     String people_id = "" + l.get(0).getUser_id();
+                    namesIds.clear();
                     if (offset == 0) {
                         items.clear();
                         for (int i = 0; i<l.size();i++){
-                            people_id += nameRec(l.get(i));
+                            nameRec(l.get(i));
                             items.add(0,l.get(i));
                         }
                     } else {
                         for (int i = 0; i<l.size();i++){
-                            people_id += nameRec(l.get(i));
+                            nameRec(l.get(i));
                             items.add(0,l.get(i));
                         }
                     }
+                    for (int i = 0; i < namesIds.size(); i++){
+                        people_id+=  "," + namesIds.get(i);
+                    }
                     people_id += ", " + preferencesManager.getUserID();
+                    Log.i ("chek",people_id);
                     refreshLayout.setRefreshing(false);
 
                     String TOKEN = preferencesManager.getToken();
@@ -276,14 +291,15 @@ public class DialogMessageActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<ServerResponse<ArrayList<User>>> call1, Throwable t) {
+                            Log.wtf("chek", t.getLocalizedMessage());
                             refreshLayout.setRefreshing(false);
                             Toast toast = Toast.makeText(getApplicationContext(),
                                     "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER, 0, 0);
-                            LinearLayout toastContainer = (LinearLayout) toast.getView();
-                            ImageView catImageView = new ImageView(getApplicationContext());
-                            catImageView.setImageResource(R.drawable.catsad);
-                            toastContainer.addView(catImageView, 0);
+//                            LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                            ImageView catImageView = new ImageView(getApplicationContext());
+//                            catImageView.setImageResource(R.drawable.catsad);
+//                            toastContainer.addView(catImageView, 0);
                             toast.show();
                         }
                     });
@@ -295,10 +311,10 @@ public class DialogMessageActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(),
                             "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
-                    LinearLayout toastContainer = (LinearLayout) toast.getView();
-                    ImageView catImageView = new ImageView(getApplicationContext());
-                    catImageView.setImageResource(R.drawable.catsad);
-                    toastContainer.addView(catImageView, 0);
+//                    LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                    ImageView catImageView = new ImageView(getApplicationContext());
+//                    catImageView.setImageResource(R.drawable.catsad);
+//                    toastContainer.addView(catImageView, 0);
                     toast.show();
                 }
             });
@@ -672,10 +688,10 @@ public class DialogMessageActivity extends AppCompatActivity {
                                         Toast toast = Toast.makeText(getApplicationContext(),
                                                 "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                                         toast.setGravity(Gravity.CENTER, 0, 0);
-                                        LinearLayout toastContainer = (LinearLayout) toast.getView();
-                                        ImageView catImageView = new ImageView(getApplicationContext());
-                                        catImageView.setImageResource(R.drawable.catsad);
-                                        toastContainer.addView(catImageView, 0);
+//                                        LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                                        ImageView catImageView = new ImageView(getApplicationContext());
+//                                        catImageView.setImageResource(R.drawable.catsad);
+//                                        toastContainer.addView(catImageView, 0);
                                         toast.show();
                                     }
                                 });

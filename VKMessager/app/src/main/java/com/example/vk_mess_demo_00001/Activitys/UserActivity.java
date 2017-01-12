@@ -170,10 +170,10 @@ public class UserActivity extends AppCompatActivity {
                         Toast toast = Toast.makeText(getApplicationContext(),
                                 "              Internet connection is lost              ", Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
-                        LinearLayout toastContainer = (LinearLayout) toast.getView();
-                        ImageView catImageView = new ImageView(getApplicationContext());
-                        catImageView.setImageResource(R.drawable.catsad);
-                        toastContainer.addView(catImageView, 0);
+//                        LinearLayout toastContainer = (LinearLayout) toast.getView();
+//                        ImageView catImageView = new ImageView(getApplicationContext());
+//                        catImageView.setImageResource(R.drawable.catsad);
+//                        toastContainer.addView(catImageView, 0);
                         toast.show();
                     }
                 });
