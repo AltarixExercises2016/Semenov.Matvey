@@ -171,7 +171,7 @@ public class FriendListFragment extends Fragment {
             }
             if (user.getPhoto_200().equals("")) {
                 Picasso.with(getContext())
-                        .load("https://vk.com/images/soviet_200.png")
+                        .load(R.drawable.soviet200)
                         .transform(new CircularTransformation())
                         .into(holder.photo);
             } else {

@@ -54,7 +54,6 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
     PagerAdapter pagerAdapter;
     SwipeRefreshLayout refreshLayout;
     static final int PAGE_COUNT = 2;
-    //    Retrofit retrofit;
     public static int page = 1; //на какой странице мы сейчас
     public static ArrayList<User> info;
     public static String ALL_FRIENDS="";
@@ -125,7 +124,6 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
         if (user_id==0) {
             Cursor cursor = dataBase.query(DBHelper.TABLE_FRIENDS, null, null, null, null, null, null);
             if (cursor.moveToFirst()) {
-//                info = new ArrayList<>();
                 info.clear();
                 Gson gson = new Gson();
                 int user = cursor.getColumnIndex(DBHelper.KEY_OBJ);
@@ -148,17 +146,6 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
 
     @Override
     protected void onStop() {
-//        if (user_id==0) {
-//            dataBase.delete(DBHelper.TABLE_FRIENDS, null, null);
-//            ContentValues contentValues = new ContentValues();
-//            Gson gson = new Gson();
-//
-//            for (int i = 0; i < info.size(); i++) {
-//                contentValues.put(DBHelper.KEY_ID_USER, info.get(i).getId());
-//                contentValues.put(DBHelper.KEY_OBJ, gson.toJson(info.get(i)));
-//                dataBase.insert(DBHelper.TABLE_FRIENDS, null, contentValues);
-//            }
-//        }
         new UpdateDataBase(user_id,info).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         super.onStop();
     }
@@ -236,10 +223,6 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
                 Toast toast = Toast.makeText(getApplicationContext(),
                         getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
-//                LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                ImageView catImageView = new ImageView(getApplicationContext());
-//                catImageView.setImageResource(R.drawable.catsad);
-//                toastContainer.addView(catImageView, 0);
                 toast.show();
             }
         });

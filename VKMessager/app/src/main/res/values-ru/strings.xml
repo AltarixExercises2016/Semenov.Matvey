@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Cookies</string>
-    <string name="ALL_FRIENDS" translatable="false">Все друзья</string>
+    <string name="ALL_FRIENDS">Все друзья</string>
     <string name="BIRTHSDAY">День рождения</string>
     <string name="COMMUNITY">Сообщество</string>
     <string name="FILTER">Фильтр</string>
@@ -24,7 +24,6 @@
     <string name="dialogs">Диалоги</string>
     <string name="display_attached_photo">Отображать прикрепленные фото</string>
     <string name="friend_list">Список друзей</string>
-    <string name="navigation_drawer_close"></string>
     <string name="out">Нажми на меня</string>
     <string name="press_the_button_to_exit">Нажмите кнопку, чтобы выйти</string>
     <string name="send_message">Отправить сообщение</string>

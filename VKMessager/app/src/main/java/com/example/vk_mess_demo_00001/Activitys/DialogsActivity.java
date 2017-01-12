@@ -150,10 +150,6 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                             Toast toast = Toast.makeText(getApplicationContext(),
                                     getString(R.string.LOST_INTERNET_CONNECTION), Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER, 0, 0);
-//                            LinearLayout toastContainer = (LinearLayout) toast.getView();
-//                            ImageView catImageView = new ImageView(getApplicationContext());
-//                            catImageView.setImageResource(R.drawable.catsad);
-//                            toastContainer.addView(catImageView, 0);
                             toast.show();
                         }
                     });
@@ -181,7 +177,6 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                 Log.i("motya", "" + names.get(i).getFirst_name());
                 cursor1.moveToNext();
             }
-//            off = (items.size() / 20 - 1) * 20;
             off=0;
             refresh(off);
         } else {
@@ -451,7 +446,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                                 .into(holder.photo);
                     } else {
                         Picasso.with(DialogsActivity.this)
-                                .load("https://vk.com/images/soviet_100.png")
+                                .load(R.drawable.soviet100)
                                 .transform(new CircularTransformation())
                                 .into(holder.photo);
                     }
@@ -470,7 +465,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                                     .into(holder.photo);
                         } else {
                             Picasso.with(DialogsActivity.this)
-                                    .load("https://vk.com/images/soviet_100.png")
+                                    .load(R.drawable.soviet100)
                                     .transform(new CircularTransformation())
                                     .into(holder.photo);
                         }
@@ -479,7 +474,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                 }
             } else {
                 Picasso.with(DialogsActivity.this)
-                        .load("https://vk.com/images/soviet_100.png")
+                        .load(R.drawable.soviet100)
                         .transform(new CircularTransformation())
                         .into(holder.photo);
                 holder.name.setText(getString(R.string.COMMUNITY));
