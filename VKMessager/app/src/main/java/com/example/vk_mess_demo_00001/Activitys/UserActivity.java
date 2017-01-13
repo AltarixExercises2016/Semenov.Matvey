@@ -1,12 +1,16 @@
 package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.support.annotation.ColorInt;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -32,7 +36,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.vk_mess_demo_00001.App.frwdMessages;
 import static com.example.vk_mess_demo_00001.App.service;
 
 public class UserActivity extends AppCompatActivity {
@@ -42,12 +45,27 @@ public class UserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.MyToolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
+        Context context=this;
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(context,R.color.primary));
+
         preferencesManager = PreferencesManager.getInstance();
         final int user_id = getIntent().getIntExtra("userID", 0);
         final User user = new Gson().fromJson(getIntent().getStringExtra("userJson"), User.class);
-        setTitle(user.getFirst_name() + " " + user.getLast_name());
+        collapsingToolbarLayout.setExpandedTitleColor(Color.WHITE);
+        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
+        collapsingToolbarLayout.setTitle(user.getFirst_name() + " " + user.getLast_name());
+
         final LinearLayout lineBottom = (LinearLayout) findViewById(R.id.lineBottom);
+
+//        LayoutInflater inflater = getLayoutInflater();
+//        View cont1 = inflater.inflate(R.layout.text_container, null);
+
         final TextView tv = new TextView(UserActivity.this);
         final TextView tv1 = new TextView(UserActivity.this);
         final TextView tv2 = new TextView(UserActivity.this);
@@ -58,6 +76,7 @@ public class UserActivity extends AppCompatActivity {
         final TextView tv7 = new TextView(UserActivity.this);
         final TextView tv8 = new TextView(UserActivity.this);
         final TextView tv9 = new TextView(UserActivity.this);
+
         lineBottom.addView(tv);
         if (user.getOnline() == 1) {
             tv.setText(R.string.ONLINE);
