@@ -570,12 +570,12 @@ public class DialogMessageActivity extends AppCompatActivity {
                     }
                 }
             });
-            year.setTimeZone(TimeZone.getTimeZone("GMT+4"));
-            month.setTimeZone(TimeZone.getTimeZone("GMT+4"));
-            day.setTimeZone(TimeZone.getTimeZone("GMT+4"));
-            hour.setTimeZone(TimeZone.getTimeZone("GMT+4"));
-            min.setTimeZone(TimeZone.getTimeZone("GMT+4"));
-            time.setTimeZone(TimeZone.getTimeZone("GMT+4"));
+            year.setTimeZone(TimeZone.getDefault());
+            month.setTimeZone(TimeZone.getDefault());
+            day.setTimeZone(TimeZone.getDefault());
+            hour.setTimeZone(TimeZone.getDefault());
+            min.setTimeZone(TimeZone.getDefault());
+            time.setTimeZone(TimeZone.getDefault());
             Date dateCurr = new Date(System.currentTimeMillis());
             Date dateTs = new Date(dialog.getDate() * 1000L);
             String time_day = day.format(dateTs);

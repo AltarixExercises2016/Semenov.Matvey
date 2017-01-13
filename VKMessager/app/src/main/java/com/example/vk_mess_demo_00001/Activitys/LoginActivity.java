@@ -1,6 +1,7 @@
 package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.webkit.WebViewClient;
 import com.example.vk_mess_demo_00001.R;
 import com.example.vk_mess_demo_00001.managers.IntentManager;
 import com.example.vk_mess_demo_00001.managers.PreferencesManager;
+import com.example.vk_mess_demo_00001.sqlite.DBHelper;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +21,7 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     public static String LOGOUT = "logout";
-
+    SQLiteDatabase dataBase;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +31,13 @@ public class LoginActivity extends AppCompatActivity {
             logout = extras.getBoolean(LOGOUT, false);
         }
         setContentView(R.layout.activity_login);
+
+        dataBase = DBHelper.getInstance().getWritableDatabase();
+        dataBase.delete(DBHelper.TABLE_DIALOGS, null, null);
+        dataBase.delete(DBHelper.TABLE_USERS, null, null);
+        dataBase.delete(DBHelper.TABLE_FRIENDS, null, null);
+        dataBase.delete(DBHelper.TABLE_USERS_IN_MESSAGES, null, null);
+        dataBase.delete(DBHelper.TABLE_MESSAGES, null, null);
 
         WebView web = (WebView) findViewById(R.id.webView);
         web.getSettings().setJavaScriptEnabled(true);
@@ -63,15 +72,7 @@ public class LoginActivity extends AppCompatActivity {
     public void doneWithThis(String url) {
         String token = extract(url, "access_token=(.*?)&");
         int uid = Integer.parseInt(extract(url, "user_id=(\\d*)"));
-//        final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-//        final SharedPreferences Uid = getSharedPreferences("uid", Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = Token.edit();
-//        editor.putString("token_string",token);
-//        editor.apply();
-//
-//        editor = Uid.edit();
-//        editor.putInt("uid_int",uid);
-//        editor.apply();
+
         PreferencesManager.getInstance().setToken(token);
         PreferencesManager.getInstance().setUserID(uid);
 

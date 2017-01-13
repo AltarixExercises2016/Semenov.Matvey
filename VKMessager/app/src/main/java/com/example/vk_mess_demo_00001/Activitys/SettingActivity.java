@@ -58,7 +58,7 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 preferencesManager.setToken("");
-                startActivity(IntentManager.getStartIntent(SettingActivity.this,true));
+                startActivity(IntentManager.getStartIntent(SettingActivity.this,true,true));
                 SettingActivity.this.finish();
             }
         });

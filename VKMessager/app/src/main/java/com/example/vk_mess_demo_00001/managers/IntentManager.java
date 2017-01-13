@@ -58,9 +58,12 @@ public class IntentManager {
         return intent;
     }
 
-    public static Intent getStartIntent (Context context, boolean logout){
+    public static Intent getStartIntent (Context context, boolean logout,boolean clearStack){
         Intent intent = new Intent(context, StartActivity.class);
         intent.putExtra("logout",logout);
+        if (clearStack){
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         return intent;
     }
 
