@@ -80,3 +80,16 @@ edit text с кнопкой отправки, нажатие кнопки - от
 
 + Пересланые сообщения:
 надпись пересланые сообщения синим цветом, нажатие на надпись открывает в текущем окне список пересланых сообщений, кнопка назад должна вернуть к предыдущему списку (согласно тому порядку в котором открывалось).
+
+
+## Версия 1.0 (13.01.17)
+
++ Скриншоты
+
+<img src="https://pp.vk.me/c626229/v626229323/443db/81DQtZcGG9g.jpg" width="250">
+<img src="https://pp.vk.me/c626229/v626229323/443e5/Irr-HoOSuNY.jpg" width="250">
+<img src="https://pp.vk.me/c626229/v626229323/443ef/KXrb-J5rHx4.jpg" width="250">
+<img src="https://pp.vk.me/c626229/v626229323/443f9/8Xuela2OImQ.jpg" width="250">
+<img src="https://pp.vk.me/c626229/v626229323/44403/VBRi1YJSF7c.jpg" width="250">
+<img src="https://pp.vk.me/c626229/v626229323/4440d/ZkMRsKW9C0Y.jpg" width="250">
+<img src="https://pp.vk.me/c626229/v626229323/44417/HfmSDQ_POgc.jpg" width="250">
