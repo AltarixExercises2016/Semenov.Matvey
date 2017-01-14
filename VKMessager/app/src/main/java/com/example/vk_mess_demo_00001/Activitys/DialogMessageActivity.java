@@ -565,9 +565,7 @@ public class DialogMessageActivity extends AppCompatActivity {
             holder.photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (dialog.getChat_id() == 0) {
-                        startActivity(IntentManager.getUserIntent(DialogMessageActivity.this,dialog.getUser_id(),new Gson().toJson(userFinal)));
-                    }
+                        startActivity(IntentManager.getUserIntent(DialogMessageActivity.this,userFinal.getId(),new Gson().toJson(userFinal)));
                 }
             });
             year.setTimeZone(TimeZone.getDefault());
@@ -718,7 +716,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                         holder.line.addView(cont);
                         break;
                     }
-                    case "Link":{
+                    case "link":{
                         bodyContainer +="\n" + dialog.getAttachments().get(i).getLink().getUrl();
                         break;
                     }

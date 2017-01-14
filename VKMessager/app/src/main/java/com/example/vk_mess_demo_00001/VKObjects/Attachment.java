@@ -13,7 +13,7 @@ public class Attachment {
     private PhotoMess sticker;
     private PhotoMess gift;
     private VideoMess video;
-    private Link Link;
+    private Link link;
     private DocMess doc;
     private AudioMess audio;
     public String getType() {
@@ -36,7 +36,7 @@ public class Attachment {
     }
 
     public Link getLink() {
-        return Link;
+        return link;
     }
 
     public DocMess getDoc() {

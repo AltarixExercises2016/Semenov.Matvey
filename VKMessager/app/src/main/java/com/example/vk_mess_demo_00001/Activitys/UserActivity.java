@@ -49,6 +49,7 @@ public class UserActivity extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.MyToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
         Context context=this;
@@ -141,8 +142,6 @@ public class UserActivity extends AppCompatActivity {
         }
         Picasso.with(UserActivity.this)
                 .load(photoUserUrl)
-                .placeholder(R.drawable.loadshort)
-                .error(R.drawable.errorshort)
                 .into((ImageView) findViewById(R.id.imageView2));
         ImageView imageView = (ImageView) findViewById(R.id.imageView2);
         imageView.setOnClickListener(new View.OnClickListener() {

@@ -18,11 +18,9 @@ public class StartActivity extends AppCompatActivity {
         final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
         String TOKEN = Token.getString("token_string","");
         if (TOKEN==""){
-//            Intent intent = new Intent(this,LoginActivity.class);
             startActivity(IntentManager.getLoginIntent(StartActivity.this,getIntent().getBooleanExtra("logout",true)));
             StartActivity.this.finish();
         }else {
-//            Intent intent = new Intent(this,DialogsActivity.class);
             startActivity(IntentManager.getDialogsIntent(StartActivity.this,false,false));
             StartActivity.this.finish();
         }
