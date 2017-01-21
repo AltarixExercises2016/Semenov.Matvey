@@ -54,6 +54,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
+import cn.nekocode.emojix.Emojix;
+import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -77,7 +80,7 @@ public class DialogMessageActivity extends AppCompatActivity {
     ArrayList<Integer> namesIds;
     SQLiteDatabase dataBase;
     PreferencesManager preferencesManager;
-    EditText mess;
+    EmojiconEditText mess;
     private static final String EXTRA_USER_ID="userID";
     private static final String EXTRA_TITLE="Title";
     private static final String EXTRA_USER_NAME="userName";
@@ -99,9 +102,14 @@ public class DialogMessageActivity extends AppCompatActivity {
         adapter = new Adapter();
         recyclerView = (RecyclerView) findViewById(R.id.list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
-        mess = (EditText) findViewById(R.id.editText);
+        mess = (EmojiconEditText) findViewById(R.id.editText);
         refreshLayout = (SwipyRefreshLayout) findViewById(R.id.refresh);
         sendButton = (Button) findViewById(R.id.button);
+        ImageView imageEmoji = (ImageView)findViewById(R.id.emoji_button);
+        imageEmoji.setImageResource(R.drawable.smiley);
+
+        EmojIconActions emojIconActions = new EmojIconActions(this, findViewById(R.id.activity_main3), mess,imageEmoji);
+        emojIconActions.ShowEmojIcon();
 
         if (chat_id != 0) {
             user_id = 2000000000 + chat_id;
@@ -252,6 +260,10 @@ public class DialogMessageActivity extends AppCompatActivity {
         return intent;
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(Emojix.wrap(newBase));
+    }
 
     class UpdateDataBase extends AsyncTask<Void, Void, Void> {
         ArrayList<Dialogs> items;

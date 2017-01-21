@@ -47,6 +47,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import cn.nekocode.emojix.Emojix;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -316,6 +317,10 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         });
     }
 
+//    @Override
+//    protected void attachBaseContext(Context newBase) {
+//        super.attachBaseContext(Emojix.wrap(newBase));
+//    }
 
     public static String convertMonth(int num) {
         String[] months = {"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",

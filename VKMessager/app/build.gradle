@@ -20,6 +20,8 @@ android {
 }
 repositories {
     mavenCentral()
+    //репозиторий смайлов EmojiconEditText
+    maven { url "https://dl.bintray.com/hani-momanii/maven"}
 }
 
 dependencies {
@@ -52,5 +54,10 @@ dependencies {
 
     compile 'com.github.stfalcon:frescoimageviewer:0.4.0'
     compile 'com.facebook.fresco:fresco:1.0.0'
+
+    //смайлы в textViews
+    compile 'com.github.nekocode:Emojix:1.2'
+    //смайлы в EmojiconEditText
+    compile 'hani.momanii.supernova_emoji_library:supernova-emoji-library:0.0.2'
 
 }
