@@ -28,4 +28,5 @@
     <string name="press_the_button_to_exit">Нажмите кнопку, чтобы выйти</string>
     <string name="send_message">Отправить сообщение</string>
     <string name="show_profile_photos">Отображать фото профилей</string>
+    <string name="left_chat">покинул чат</string>
 </resources>

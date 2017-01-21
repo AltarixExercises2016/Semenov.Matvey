@@ -47,6 +47,7 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.MyToolbar);
+        toolbar.setNavigationIcon(R.mipmap.back_button);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

@@ -36,7 +36,6 @@ import com.example.vk_mess_demo_00001.sqlite.DBHelper;
 import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
 import com.example.vk_mess_demo_00001.vkobjects.Attachment;
 import com.example.vk_mess_demo_00001.vkobjects.Dialogs;
-import com.example.vk_mess_demo_00001.vkobjects.Item;
 import com.example.vk_mess_demo_00001.vkobjects.ItemMess;
 import com.example.vk_mess_demo_00001.R;
 import com.example.vk_mess_demo_00001.vkobjects.ServerResponse;
@@ -71,7 +70,7 @@ public class DialogMessageActivity extends AppCompatActivity {
     private String title;
     private boolean frwd;
     Adapter adapter;
-    Button qwe;
+    Button sendButton;
     private RecyclerView recyclerView;
     SwipyRefreshLayout refreshLayout;
     int off;
@@ -80,7 +79,7 @@ public class DialogMessageActivity extends AppCompatActivity {
     ArrayList<Integer> namesIds;
     SQLiteDatabase dataBase;
     PreferencesManager preferencesManager;
-
+    EditText mess;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -98,8 +97,9 @@ public class DialogMessageActivity extends AppCompatActivity {
         adapter = new Adapter();
         recyclerView = (RecyclerView) findViewById(R.id.list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
+        mess = (EditText) findViewById(R.id.editText);
         refreshLayout = (SwipyRefreshLayout) findViewById(R.id.refresh);
-        qwe = (Button) findViewById(R.id.button);
+        sendButton = (Button) findViewById(R.id.button);
 
         if (chat_id != 0) {
             user_id = 2000000000 + chat_id;
@@ -112,6 +112,7 @@ public class DialogMessageActivity extends AppCompatActivity {
             }
         }
 
+        if (frwdMessages.size()>0) mess.setHint(" "+ frwdMessages.size()+ " " + getString(R.string.FORWARD_MESSAGES));
 
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         llm.setStackFromEnd(true);
@@ -136,12 +137,11 @@ public class DialogMessageActivity extends AppCompatActivity {
                 }
             }
         });
-        qwe.setOnClickListener(new View.OnClickListener() {
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!frwd) {
                     refreshLayout.setRefreshing(true);
-                    final EditText mess = (EditText) findViewById(R.id.editText);
                     if ((!mess.getText().toString().equals(""))||(frwdMessages.size()>0)) {
                         String message = mess.getText().toString();
                         mess.setText("");
@@ -163,6 +163,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                             public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
                                 Log.wtf("motya", response.raw().toString());
                                 frwdMessages.clear();
+                                mess.setHint (getString(R.string.WRITE_MESSAGE));
                                 off = 0;
                                 refresh(off);
                             }
@@ -221,6 +222,11 @@ public class DialogMessageActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        if (frwdMessages.size()>0){
+            mess.setHint(" "+ frwdMessages.size()+ " " + getString(R.string.FORWARD_MESSAGES));
+        }else{
+            mess.setHint(getString(R.string.WRITE_MESSAGE));
+        }
         adapter.notifyDataSetChanged();
         super.onResume();
     }
@@ -535,15 +541,27 @@ public class DialogMessageActivity extends AppCompatActivity {
                     for (int i=0;i<frwdMessages.size();i++){
                         if (frwdMessages.get(i)==dialog.getId()){
                             frwdMessages.remove(i);
-                            viewHolder.foo.setBackgroundColor(Color.WHITE);
+                            if (dialog.getRead_state()==1) {
+                                viewHolder.foo.setBackgroundColor(Color.WHITE);
+                            }else {
+                                viewHolder.foo.setBackgroundColor(ContextCompat.getColor(DialogMessageActivity.this, R.color.accent));
+                            }
                             chek=true;
                             break;
                         }
                     }
+
                     if (!chek){
                         frwdMessages.add (dialog.getId());
                         viewHolder.foo.setBackgroundColor(ContextCompat.getColor(DialogMessageActivity.this, R.color.primary_dark));
                     }
+
+                    if (frwdMessages.size()>0){
+                        mess.setHint(" "+ frwdMessages.size()+ " " + getString(R.string.FORWARD_MESSAGES));
+                    }else{
+                        mess.setHint(getString(R.string.WRITE_MESSAGE));
+                    }
+
                     if (frwdMessages.size()>0){
                         Button button = new Button(DialogMessageActivity.this);
                         button.setText(getString(R.string.FORWARD));
@@ -901,7 +919,10 @@ public class DialogMessageActivity extends AppCompatActivity {
 
             }
             holder.body.setAutoLinkText(bodyContainer);
-
+            if (dialog.getAction()!=null){
+                if (dialog.getAction().equals("chat_kick_user"))
+                holder.body.setAutoLinkText(getString(R.string.left_chat));
+            }
         }
 
         @Override

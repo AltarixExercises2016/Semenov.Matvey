@@ -501,6 +501,10 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
                     }
                 }
             }
+            if (dialog.getAction()!=null){
+                if (dialog.getAction().equals("chat_kick_user"))
+                    holder.body.setText(getString(R.string.left_chat));
+            }
 
             year.setTimeZone(TimeZone.getDefault());
             month.setTimeZone(TimeZone.getDefault());
