@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Created by matek on 10.01.2017.
- */
 
 public class PreferencesManager {
 

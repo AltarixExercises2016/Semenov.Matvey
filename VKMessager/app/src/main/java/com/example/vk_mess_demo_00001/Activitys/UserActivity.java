@@ -1,8 +1,8 @@
 package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.managers.IntentManager;
 import com.example.vk_mess_demo_00001.managers.PreferencesManager;
 import com.example.vk_mess_demo_00001.vkobjects.attachmenttype.PhotoMess;
 import com.example.vk_mess_demo_00001.vkobjects.ItemMess;
@@ -40,7 +38,8 @@ import static com.example.vk_mess_demo_00001.App.service;
 
 public class UserActivity extends AppCompatActivity {
     PreferencesManager preferencesManager;
-
+    private static final String EXTRA_USER_ID="userID";
+    private static final String EXTRA_USER_JSON="userJson";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +56,8 @@ public class UserActivity extends AppCompatActivity {
         collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(context,R.color.primary));
 
         preferencesManager = PreferencesManager.getInstance();
-        final int user_id = getIntent().getIntExtra("userID", 0);
-        final User user = new Gson().fromJson(getIntent().getStringExtra("userJson"), User.class);
+        final int user_id = getIntent().getIntExtra(EXTRA_USER_ID, 0);
+        final User user = new Gson().fromJson(getIntent().getStringExtra(EXTRA_USER_JSON), User.class);
         collapsingToolbarLayout.setExpandedTitleColor(Color.WHITE);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         collapsingToolbarLayout.setTitle(user.getFirst_name() + " " + user.getLast_name());
@@ -196,15 +195,22 @@ public class UserActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(IntentManager.getDialogMessageIntent(UserActivity.this, user_id, 0, "", user.getFirst_name() + " " + user.getLast_name(), false));
+                startActivity(DialogMessageActivity.getIntent(UserActivity.this, user_id, 0, "", user.getFirst_name() + " " + user.getLast_name(), false));
             }
         });
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(IntentManager.getFriendIntent(UserActivity.this, user_id, false));
+                startActivity(FriendsActivity.getIntent(UserActivity.this, user_id, false));
             }
         });
+    }
+
+    public static Intent getIntent (Context context, int userId, String userJson){
+        Intent intent = new Intent(context, UserActivity.class);
+        intent.putExtra(EXTRA_USER_ID, userId);
+        intent.putExtra(EXTRA_USER_JSON, userJson);
+        return intent;
     }
 
     @Override

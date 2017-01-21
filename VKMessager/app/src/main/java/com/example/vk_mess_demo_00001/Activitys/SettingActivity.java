@@ -2,7 +2,6 @@ package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -12,7 +11,6 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.managers.IntentManager;
 import com.example.vk_mess_demo_00001.managers.PreferencesManager;
 
 public class SettingActivity extends AppCompatActivity {
@@ -58,11 +56,17 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 preferencesManager.setToken("");
-                startActivity(IntentManager.getStartIntent(SettingActivity.this,true,true));
+                startActivity(StartActivity.getIntent(SettingActivity.this,true,true));
                 SettingActivity.this.finish();
             }
         });
     }
+
+    static Intent getIntent (Context context){
+        Intent intent = new Intent(context, SettingActivity.class);
+        return intent;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

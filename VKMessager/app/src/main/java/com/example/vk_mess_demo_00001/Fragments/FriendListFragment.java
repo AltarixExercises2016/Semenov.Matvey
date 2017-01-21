@@ -1,6 +1,5 @@
 package com.example.vk_mess_demo_00001.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,10 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.vk_mess_demo_00001.activitys.FriendsActivity;
 import com.example.vk_mess_demo_00001.activitys.UserActivity;
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.managers.IntentManager;
 import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
 import com.example.vk_mess_demo_00001.vkobjects.User;
 import com.google.gson.Gson;
@@ -61,9 +58,6 @@ public class FriendListFragment extends Fragment {
                 }
             }
             users = onlineUsers;
-            ((FriendsActivity) getActivity()).setOnlineFriendsCount(users.size());
-        } else {
-            ((FriendsActivity) getActivity()).setAllFriendsCount(users.size());
         }
     }
 
@@ -159,7 +153,7 @@ public class FriendListFragment extends Fragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(IntentManager.getUserIntent(getContext(),user.getId(),new Gson().toJson(user)));
+                    startActivity(UserActivity.getIntent(getContext(),user.getId(),new Gson().toJson(user)));
                 }
             });
 

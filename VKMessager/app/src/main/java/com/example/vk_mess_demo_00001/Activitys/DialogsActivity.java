@@ -25,18 +25,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.ref.SoftReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.managers.IntentManager;
 import com.example.vk_mess_demo_00001.sqlite.DBHelper;
 import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
 import com.example.vk_mess_demo_00001.managers.PreferencesManager;
@@ -54,7 +51,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.vk_mess_demo_00001.App.frwdMessages;
 import static com.example.vk_mess_demo_00001.App.service;
 
 public class DialogsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,7 +64,7 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
     private RecyclerView recyclerView;
     SQLiteDatabase dataBase;
     PreferencesManager preferencesManager;
-
+    private static final String EXTRA_FORWARD_MESSAGE="frwd";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -191,6 +187,15 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
     protected void onStop() {
         new UpdateDataBase(items,names).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         super.onStop();
+    }
+
+    static Intent getIntent (Context context, boolean frwdMessDetector, boolean clearStack){
+        Intent intent = new Intent(context, DialogsActivity.class);
+        if (clearStack){
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        intent.putExtra(EXTRA_FORWARD_MESSAGE,frwdMessDetector);
+        return intent;
     }
 
     class UpdateDataBase extends AsyncTask<Void, Void, Void>{
@@ -352,14 +357,14 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            startActivity(IntentManager.getDialogsIntent(DialogsActivity.this, false, true));
+            startActivity(DialogsActivity.getIntent(DialogsActivity.this, false, true));
             DialogsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
-            startActivity(IntentManager.getFriendIntent(DialogsActivity.this, 0, true));
+            startActivity(FriendsActivity.getIntent(DialogsActivity.this, 0, true));
             DialogsActivity.this.finish();
         } else if (id == R.id.nav_settings) {
-            startActivity(IntentManager.getSettingIntent(DialogsActivity.this));
+            startActivity(SettingActivity.getIntent(DialogsActivity.this));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -417,17 +422,17 @@ public class DialogsActivity extends AppCompatActivity implements NavigationView
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (getIntent().getBooleanExtra("frwd", false)) {
+                    if (getIntent().getBooleanExtra(EXTRA_FORWARD_MESSAGE, false)) {
                         DialogsActivity.this.finish();
                     }
-                    startActivity(IntentManager.getDialogMessageIntent(DialogsActivity.this, dialog.getUser_id(), dialog.getChat_id(), dialog.getTitle(), userFinal.getFirst_name() + " " + userFinal.getLast_name(), getIntent().getBooleanExtra("frwd", false)));
+                    startActivity(DialogMessageActivity.getIntent(DialogsActivity.this, dialog.getUser_id(), dialog.getChat_id(), dialog.getTitle(), userFinal.getFirst_name() + " " + userFinal.getLast_name(), getIntent().getBooleanExtra("frwd", false)));
                 }
             });
             holder.photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (dialog.getChat_id() == 0) {
-                        startActivity(IntentManager.getUserIntent(DialogsActivity.this, dialog.getUser_id(), new Gson().toJson(userFinal)));
+                        startActivity(UserActivity.getIntent(DialogsActivity.this, dialog.getUser_id(), new Gson().toJson(userFinal)));
                     }
                 }
             });

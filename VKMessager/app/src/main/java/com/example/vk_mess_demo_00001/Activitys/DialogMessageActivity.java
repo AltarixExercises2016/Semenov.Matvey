@@ -3,7 +3,6 @@ package com.example.vk_mess_demo_00001.activitys;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -30,7 +29,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vk_mess_demo_00001.managers.IntentManager;
 import com.example.vk_mess_demo_00001.managers.PreferencesManager;
 import com.example.vk_mess_demo_00001.sqlite.DBHelper;
 import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
@@ -80,6 +78,10 @@ public class DialogMessageActivity extends AppCompatActivity {
     SQLiteDatabase dataBase;
     PreferencesManager preferencesManager;
     EditText mess;
+    private static final String EXTRA_USER_ID="userID";
+    private static final String EXTRA_TITLE="Title";
+    private static final String EXTRA_USER_NAME="userName";
+    private static final String EXTRA_CHAT_ID="ChatID";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -89,8 +91,8 @@ public class DialogMessageActivity extends AppCompatActivity {
         frwd=false;
         dataBase = DBHelper.getInstance().getWritableDatabase();
         preferencesManager = PreferencesManager.getInstance();
-        user_id = getIntent().getIntExtra("userID", 0);
-        chat_id = getIntent().getIntExtra("ChatID", 0);
+        user_id = getIntent().getIntExtra(EXTRA_USER_ID, 0);
+        chat_id = getIntent().getIntExtra(EXTRA_CHAT_ID, 0);
         items = new ArrayList<>();
         names = new ArrayList<>();
         namesIds = new ArrayList<>();
@@ -103,12 +105,12 @@ public class DialogMessageActivity extends AppCompatActivity {
 
         if (chat_id != 0) {
             user_id = 2000000000 + chat_id;
-            title = getIntent().getStringExtra("Title");
+            title = getIntent().getStringExtra(EXTRA_TITLE);
         } else {
             if (user_id < 0) {
                 title = getString(R.string.COMMUNITY);
             } else {
-                title = getIntent().getStringExtra("userName");
+                title = getIntent().getStringExtra(EXTRA_USER_NAME);
             }
         }
 
@@ -236,6 +238,20 @@ public class DialogMessageActivity extends AppCompatActivity {
         new UpdateDataBase(user_id,items,names).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         super.onStop();
     }
+
+
+    static Intent getIntent (Context context, int userId, int chatId, String title, String userName, boolean frwdMessDetector){
+        Intent intent = new Intent(context, DialogMessageActivity.class);
+        intent.putExtra(EXTRA_USER_ID, userId);
+        intent.putExtra(EXTRA_TITLE, title);
+        intent.putExtra(EXTRA_USER_NAME, userName);
+        intent.putExtra(EXTRA_CHAT_ID, chatId);
+        if (!frwdMessDetector){
+            frwdMessages.clear();
+        }
+        return intent;
+    }
+
 
     class UpdateDataBase extends AsyncTask<Void, Void, Void> {
         ArrayList<Dialogs> items;
@@ -572,7 +588,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                startActivity(IntentManager.getDialogsIntent(DialogMessageActivity.this,true,false));
+                                startActivity(DialogsActivity.getIntent(DialogMessageActivity.this,true,false));
                             }
                         });
                     }else {
@@ -583,7 +599,7 @@ public class DialogMessageActivity extends AppCompatActivity {
             holder.photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        startActivity(IntentManager.getUserIntent(DialogMessageActivity.this,userFinal.getId(),new Gson().toJson(userFinal)));
+                        startActivity(UserActivity.getIntent(DialogMessageActivity.this,userFinal.getId(),new Gson().toJson(userFinal)));
                 }
             });
             year.setTimeZone(TimeZone.getDefault());
@@ -701,7 +717,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                             ImageView photochka = (ImageView) cont.findViewById(R.id.imageView);
                             TextView text = (TextView) cont.findViewById(R.id.textView3);
                             text.setText(getString(R.string.PHOTO));
-                            final String finalphoto = photo;
+                            final String finalPhoto = photo;
                             Picasso.with(DialogMessageActivity.this)
                                     .load(photomess)
                                     .placeholder(R.drawable.loadshort)
@@ -711,10 +727,12 @@ public class DialogMessageActivity extends AppCompatActivity {
                             photochka.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    new ImageViewer.Builder(DialogMessageActivity.this, new String[]{finalphoto} )
+                                    new ImageViewer.Builder(DialogMessageActivity.this, new String[]{finalPhoto} )
                                             .show();
                                 }
                             });
+                        }else{
+                            bodyContainer += "\n"+getString(R.string.PHOTO);
                         }
                         break;
                     }
@@ -759,8 +777,7 @@ public class DialogMessageActivity extends AppCompatActivity {
                                 Toast toast = Toast.makeText(getApplicationContext(),
                                         getString(R.string.LOADING), Toast.LENGTH_LONG);
                                 toast.show();
-                                final SharedPreferences Token = getSharedPreferences("token", Context.MODE_PRIVATE);
-                                String TOKEN = Token.getString("token_string", "");
+                                String TOKEN = preferencesManager.getToken();
                                 Call<ServerResponse<ItemMess<ArrayList<VideoInformation>>>> call = service.getVideos(TOKEN, video);
 
                                 call.enqueue(new Callback<ServerResponse<ItemMess<ArrayList<VideoInformation>>>>() {

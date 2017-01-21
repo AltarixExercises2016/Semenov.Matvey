@@ -1,5 +1,6 @@
 package com.example.vk_mess_demo_00001.activitys;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.managers.IntentManager;
 import com.example.vk_mess_demo_00001.managers.PreferencesManager;
 import com.example.vk_mess_demo_00001.sqlite.DBHelper;
 
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static String LOGOUT = "logout";
+    public static String EXTRA_LOGOUT = "logout";
     SQLiteDatabase dataBase;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         boolean logout = false;
         if(extras != null) {
-            logout = extras.getBoolean(LOGOUT, false);
+            logout = extras.getBoolean(EXTRA_LOGOUT, false);
         }
         setContentView(R.layout.activity_login);
 
@@ -69,6 +69,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    static Intent getIntent (Context context, boolean logout){
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(EXTRA_LOGOUT,logout);
+        return intent;
+    }
+
     public void doneWithThis(String url) {
         String token = extract(url, "access_token=(.*?)&");
         int uid = Integer.parseInt(extract(url, "user_id=(\\d*)"));
@@ -91,6 +98,6 @@ public class LoginActivity extends AppCompatActivity {
 //        Intent intent = new Intent();
 //        intent.setClass(getApplicationContext(), DialogsActivity.class);
         LoginActivity.this.finish();
-        startActivity(IntentManager.getDialogsIntent(getApplicationContext(),false,false));
+        startActivity(DialogsActivity.getIntent(getApplicationContext(),false,false));
     }
 }

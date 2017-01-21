@@ -1,6 +1,7 @@
 package com.example.vk_mess_demo_00001.activitys;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -24,13 +25,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vk_mess_demo_00001.fragments.FriendListFragment;
 import com.example.vk_mess_demo_00001.R;
-import com.example.vk_mess_demo_00001.managers.IntentManager;
 import com.example.vk_mess_demo_00001.sqlite.DBHelper;
 import com.example.vk_mess_demo_00001.transformation.CircularTransformation;
 import com.example.vk_mess_demo_00001.managers.PreferencesManager;
@@ -61,11 +60,11 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
     SQLiteDatabase dataBase;
     PreferencesManager preferencesManager;
     int user_id;
-
+    private static final String EXTRA_USER_ID="userID";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         dataBase = DBHelper.getInstance().getWritableDatabase();
-        user_id = getIntent().getIntExtra("userID", 0);
+        user_id = getIntent().getIntExtra(EXTRA_USER_ID, 0);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
         setTitle(getString(R.string.FRIENDS));
@@ -96,10 +95,8 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
             ((ImageView) navigationView.getHeaderView(0).findViewById(R.id.imageView20)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(FriendsActivity.this, UserActivity.class);
-                    intent.putExtra("userID", iuser.getId());
-                    intent.putExtra("userJson", uidgson);
-                    startActivity(intent);
+
+                    startActivity(UserActivity.getIntent(FriendsActivity.this,iuser.getId(),uidgson));
                 }
             });
             if (iuser.getOnline()==1){
@@ -134,6 +131,8 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
                 pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
                 pager.setAdapter(pagerAdapter);
 
+                setCountFriends();
+
                 refresh(user_id);
             } else {
                 refresh(user_id);
@@ -146,8 +145,19 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
 
     @Override
     protected void onStop() {
-        new UpdateDataBase(user_id,info).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        if (user_id==0) {
+            new UpdateDataBase(user_id, info).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        }
         super.onStop();
+    }
+
+    static Intent getIntent(Context context, int userId, boolean clearStack){
+        Intent intent = new Intent(context, FriendsActivity.class);
+        if (clearStack){
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        intent.putExtra(EXTRA_USER_ID,userId);
+        return intent;
     }
 
     class UpdateDataBase extends AsyncTask<Void,Void,Void>{
@@ -184,6 +194,17 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
         }
     }
 
+    public void setCountFriends (){
+        int onlineCount =0;
+        for (int i=0;i<info.size();i++){
+            if (info.get(i).getOnline()==1){
+                onlineCount++;
+            }
+        }
+        setAllFriendsCount(info.size());
+        setOnlineFriendsCount(onlineCount);
+    }
+
     public void setAllFriendsCount(int cnt) {
         ALL_FRIENDS = getString(R.string.ALL_FRIENDS) + " (" + cnt + ")";
     }
@@ -209,6 +230,8 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
                     page = pager.getCurrentItem();
                 }
                 pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+
+                setCountFriends();
 
                 pager.setAdapter(pagerAdapter);
                 pager.setCurrentItem(page);
@@ -289,14 +312,14 @@ public class FriendsActivity extends AppCompatActivity implements NavigationView
         int id = item.getItemId();
 
         if (id == R.id.nav_dialogs) {
-            startActivity(IntentManager.getDialogsIntent(FriendsActivity.this,false,true));
+            startActivity(DialogsActivity.getIntent(FriendsActivity.this,false,true));
             FriendsActivity.this.finish();
 
         } else if (id == R.id.nav_friends) {
-            startActivity(IntentManager.getFriendIntent(FriendsActivity.this,0,true));
+            startActivity(FriendsActivity.getIntent(FriendsActivity.this,0,true));
             FriendsActivity.this.finish();
         } else if (id == R.id.nav_settings) {
-            startActivity(IntentManager.getSettingIntent(FriendsActivity.this));
+            startActivity(SettingActivity.getIntent(FriendsActivity.this));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
