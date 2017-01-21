@@ -14,7 +14,7 @@
         android:id="@+id/refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/container"
+        android:layout_above="@+id/frame"
         android:background="@android:color/white"
         app:srl_direction="both"
         tools:context="com.shppandroid1.app.Main2Activity">
@@ -45,14 +45,6 @@
             android:background="@drawable/send" />
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/frame"
-        android:orientation="vertical">
-
-    </LinearLayout>
 
     <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
         android:id="@+id/editText"
@@ -87,5 +79,15 @@
             android:layout_width="40dp"
             android:layout_height="40dp" />
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/fab"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@mipmap/forward_icon"
+        android:layout_margin="16dp"
+        android:layout_above="@+id/frame"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>

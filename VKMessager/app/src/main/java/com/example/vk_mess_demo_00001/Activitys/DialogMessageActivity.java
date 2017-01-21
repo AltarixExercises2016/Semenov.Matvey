@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -81,6 +80,7 @@ public class DialogMessageActivity extends AppCompatActivity {
     SQLiteDatabase dataBase;
     PreferencesManager preferencesManager;
     EmojiconEditText mess;
+    Button forwardButton;
     private static final String EXTRA_USER_ID="userID";
     private static final String EXTRA_TITLE="Title";
     private static final String EXTRA_USER_NAME="userName";
@@ -105,6 +105,7 @@ public class DialogMessageActivity extends AppCompatActivity {
         mess = (EmojiconEditText) findViewById(R.id.editText);
         refreshLayout = (SwipyRefreshLayout) findViewById(R.id.refresh);
         sendButton = (Button) findViewById(R.id.button);
+        forwardButton = (Button) findViewById(R.id.fab);
         ImageView imageEmoji = (ImageView)findViewById(R.id.emoji_button);
         imageEmoji.setImageResource(R.drawable.smiley);
 
@@ -528,8 +529,6 @@ public class DialogMessageActivity extends AppCompatActivity {
                     }
                 }
             }
-            final LinearLayout linearLayout = ((LinearLayout)DialogMessageActivity.this.findViewById(R.id.container));
-
 
             if (dialog.getRead_state() == 0) {
                 holder.foo.setBackgroundColor(ContextCompat.getColor(DialogMessageActivity.this, R.color.accent));
@@ -561,7 +560,7 @@ public class DialogMessageActivity extends AppCompatActivity {
             final User userFinal = user;
             final ViewHolder viewHolder = holder;
 
-            if (frwdMessages.size()==0) linearLayout.removeAllViews();
+            if (frwdMessages.size()==0) forwardButton.setVisibility(View.INVISIBLE);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -591,20 +590,15 @@ public class DialogMessageActivity extends AppCompatActivity {
                     }
 
                     if (frwdMessages.size()>0){
-                        Button button = new Button(DialogMessageActivity.this);
-                        button.setText(getString(R.string.FORWARD));
-                        button.setBackgroundResource(R.drawable.circle);
-                        linearLayout.removeAllViews();
-                        linearLayout.addView(button);
-
-                        button.setOnClickListener(new View.OnClickListener() {
+                        forwardButton.setVisibility(View.VISIBLE);
+                        forwardButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 startActivity(DialogsActivity.getIntent(DialogMessageActivity.this,true,false));
                             }
                         });
                     }else {
-                        linearLayout.removeAllViews();
+                        forwardButton.setVisibility(View.INVISIBLE);
                     }
                 }
             });
